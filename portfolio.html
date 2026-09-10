@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Portfolio Tracker</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f4f5f7;
+    margin: 0;
+    padding: 20px;
+    color: #222;
+  }
+  .container {
+    max-width: 520px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .wide { max-width: 900px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color: #666; font-size: 14px; margin: 0 0 20px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; color: #333; }
+  input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d5d7db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+  }
+  input[readonly] { background: #f0f1f3; color: #555; }
+  button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 18px;
+  }
+  button:hover { background: #1d4ed8; }
+  button.secondary { background: #6b7280; }
+  button.secondary:hover { background: #4b5563; }
+  .choice-btns { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+  .error { color: #d92d20; font-size: 13px; margin-top: 8px; display: none; }
+  .success { color: #067647; font-size: 13px; margin-top: 8px; display: none; }
+  .closed-box {
+    background: #fff7ed; border: 1px solid #fdba74; border-radius: 8px;
+    padding: 16px; font-size: 14px; color: #9a3412; margin-top: 16px;
+  }
+  .hidden { display: none !important; }
+  .back-link { display: inline-block; margin-bottom: 14px; font-size: 13px; color: #2563eb; cursor: pointer; text-decoration: none; }
+  .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+  .filters select { width: auto; min-width: 140px; flex: 1; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eee; }
+  th { background: #f9fafb; font-weight: 600; color: #444; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .badge.filled { background: #dcfce7; color: #166534; }
+  .badge.notfilled { background: #fee2e2; color: #991b1b; }
+  .count { font-size: 13px; color: #666; margin-bottom: 10px; }
+  .section-title { font-size: 15px; font-weight: 600; margin: 24px 0 10px; }
+  .loading { text-align: center; padding: 30px; color: #888; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ================= VIEW 1: LANDING ================= -->
+<div id="view-landing" class="container">
+  <h1>Employee portfolio tracker</h1>
+  <p class="sub">Fill your monthly portfolio or view the admin dashboard.</p>
+  <div class="choice-btns">
+    <button onclick="showView('verify')">Fill portfolio</button>
+    <button class="secondary" onclick="showView('adminPin')">Admin dashboard</button>
+  </div>
+</div>
+
+<!-- ================= VIEW 2: EMPLOYEE VERIFY ================= -->
+<div id="view-verify" class="container hidden">
+  <a class="back-link" onclick="showView('landing')">&larr; Back</a>
+  <h1>Verify yourself</h1>
+  <p class="sub">Enter your Employee ID or name to continue.</p>
+
+  <div id="closedMsg" class="closed-box hidden">
+    This month's form is closed. It reopens on the 1st of next month (open for the first 5 days).
+  </div>
+
+  <div id="verifyBox">
+    <label>Employee ID or name</label>
+    <input type="text" id="empInput" placeholder="e.g. EMP001 or Rahul Sharma">
+    <div class="error" id="verifyError">You're not recognized as an employee. Please check and try again.</div>
+    <button onclick="verifyEmployee()">Verify</button>
+  </div>
+</div>
+
+<!-- ================= VIEW 3: PORTFOLIO FORM ================= -->
+<div id="view-form" class="container hidden">
+  <a class="back-link" onclick="showView('landing')">&larr; Back</a>
+  <h1>Fill your portfolio</h1>
+  <p class="sub" id="formSubtitle"></p>
+
+  <label>Employee name</label>
+  <input type="text" id="formName" readonly>
+
+  <label>Team</label>
+  <input type="text" id="formTeam" readonly>
+
+  <label>Client name</label>
+  <input type="text" id="formClient" placeholder="Enter client name">
+
+  <label>Task type</label>
+  <select id="formTaskType">
+    <option value="">Select task type</option>
+    <option value="Drafting">Drafting</option>
+    <option value="Self Finalize">Self Finalize</option>
+    <option value="QC">QC</option>
+  </select>
+
+  <label>Month</label>
+  <input type="text" id="formMonth" readonly>
+
+  <div class="error" id="formError"></div>
+  <div class="success" id="formSuccess">Submitted successfully. Thank you!</div>
+
+  <button onclick="submitForm()">Submit</button>
+</div>
+
+<!-- ================= VIEW 4: ADMIN PIN ================= -->
+<div id="view-adminPin" class="container hidden">
+  <a class="back-link" onclick="showView('landing')">&larr; Back</a>
+  <h1>Admin access</h1>
+  <p class="sub">Enter PIN to view the dashboard.</p>
+  <label>PIN</label>
+  <input type="password" id="pinInput">
+  <div class="error" id="pinError">Incorrect PIN.</div>
+  <button onclick="checkPin()">Unlock</button>
+</div>
+
+<!-- ================= VIEW 5: ADMIN DASHBOARD ================= -->
+<div id="view-dashboard" class="container wide hidden">
+  <a class="back-link" onclick="showView('landing')">&larr; Back</a>
+  <h1>Admin dashboard</h1>
+  <p class="sub">Filter and review all submitted portfolios.</p>
+
+  <div id="dashLoading" class="loading">Loading data...</div>
+
+  <div id="dashContent" class="hidden">
+    <div class="filters">
+      <select id="filterMonth" onchange="applyFilters()"></select>
+      <select id="filterTeam" onchange="applyFilters()"></select>
+      <select id="filterEmployee" onchange="applyFilters()"></select>
+    </div>
+
+    <div class="count" id="resultCount"></div>
+    <table id="resultsTable">
+      <thead>
+        <tr><th>Employee</th><th>Team</th><th>Client</th><th>Task type</th><th>Month</th><th>Submitted</th></tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+
+    <div class="section-title">Fill status (current month)</div>
+    <table>
+      <thead><tr><th>Employee</th><th>Team</th><th>Status</th></tr></thead>
+      <tbody id="statusBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ============ CONFIG ============
+const API_URL = "https://script.google.com/macros/s/AKfycbw-5sSznka6TBmxqS5LlwFH00sSEyQoDNgl46fbjA3Q7BPcexXhFKeE8oxwqAyf1eVP4w/exec";
+const ADMIN_PIN = "Admin@456"; // CHANGE THIS before going live
+
+// ============ VIEW SWITCHING ============
+function showView(name) {
+  document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+  document.getElementById('view-' + name).classList.remove('hidden');
+  if (name === 'verify') initVerifyScreen();
+}
+
+// ============ MONTH / DATE HELPERS ============
+function getMonthLabel(d) {
+  return d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+}
+function isFormOpen() {
+  const day = new Date().getDate();
+  return day <= 5;
+}
+
+// ============ EMPLOYEE VERIFY + FORM ============
+let employeeList = [];
+let matchedEmployee = null;
+
+function initVerifyScreen() {
+  document.getElementById('verifyError').style.display = 'none';
+  document.getElementById('empInput').value = '';
+
+  if (!isFormOpen()) {
+    document.getElementById('closedMsg').classList.remove('hidden');
+    document.getElementById('verifyBox').classList.add('hidden');
+    return;
+  }
+  document.getElementById('closedMsg').classList.add('hidden');
+  document.getElementById('verifyBox').classList.remove('hidden');
+
+  fetch(API_URL + '?action=getEmployees')
+    .then(r => r.json())
+    .then(res => { if (res.status === 'success') employeeList = res.data; })
+    .catch(() => {});
+}
+
+function verifyEmployee() {
+  const val = document.getElementById('empInput').value.trim().toLowerCase();
+  const errEl = document.getElementById('verifyError');
+  if (!val) { errEl.textContent = 'Please enter your Employee ID or name.'; errEl.style.display = 'block'; return; }
+
+  const match = employeeList.find(emp =>
+    emp.id.toLowerCase() === val || emp.name.toLowerCase() === val
+  );
+
+  if (!match) {
+    errEl.textContent = "You're not recognized as an employee. Please check and try again.";
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  matchedEmployee = match;
+  openForm(match);
+}
+
+function openForm(emp) {
+  document.getElementById('formName').value = emp.name;
+  document.getElementById('formTeam').value = emp.team;
+  document.getElementById('formMonth').value = getMonthLabel(new Date());
+  document.getElementById('formClient').value = '';
+  document.getElementById('formTaskType').value = '';
+  document.getElementById('formError').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'none';
+  document.getElementById('formSubtitle').textContent = 'Verified as ' + emp.name;
+  showView('form');
+}
+
+function submitForm() {
+  const client = document.getElementById('formClient').value.trim();
+  const taskType = document.getElementById('formTaskType').value;
+  const errEl = document.getElementById('formError');
+  const okEl = document.getElementById('formSuccess');
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  if (!client || !taskType) {
+    errEl.textContent = 'Please fill in client name and task type.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!isFormOpen()) {
+    errEl.textContent = "This month's form is closed.";
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const payload = {
+    employeeId: matchedEmployee.id,
+    employeeName: matchedEmployee.name,
+    team: matchedEmployee.team,
+    client: client,
+    taskType: taskType
+  };
+
+  fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+    .then(r => r.json())
+    .then(res => {
+      if (res.status === 'success') {
+        okEl.style.display = 'block';
+        document.getElementById('formClient').value = '';
+        document.getElementById('formTaskType').value = '';
+      } else {
+        errEl.textContent = res.message || 'Something went wrong. Please try again.';
+        errEl.style.display = 'block';
+      }
+    })
+    .catch(() => {
+      errEl.textContent = 'Could not connect. Please check your internet and try again.';
+      errEl.style.display = 'block';
+    });
+}
+
+// ============ ADMIN PIN ============
+function checkPin() {
+  const val = document.getElementById('pinInput').value;
+  const errEl = document.getElementById('pinError');
+  if (val === ADMIN_PIN) {
+    errEl.style.display = 'none';
+    document.getElementById('pinInput').value = '';
+    loadDashboard();
+  } else {
+    errEl.style.display = 'block';
+  }
+}
+
+// ============ ADMIN DASHBOARD ============
+let allEmployees = [];
+let allResponses = [];
+
+function loadDashboard() {
+  showView('dashboard');
+  document.getElementById('dashLoading').classList.remove('hidden');
+  document.getElementById('dashContent').classList.add('hidden');
+
+  Promise.all([
+    fetch(API_URL + '?action=getEmployees').then(r => r.json()),
+    fetch(API_URL + '?action=getResponses').then(r => r.json())
+  ]).then(([empRes, respRes]) => {
+    allEmployees = empRes.status === 'success' ? empRes.data : [];
+    allResponses = respRes.status === 'success' ? respRes.data : [];
+    populateFilters();
+    applyFilters();
+    document.getElementById('dashLoading').classList.add('hidden');
+    document.getElementById('dashContent').classList.remove('hidden');
+  }).catch(() => {
+    document.getElementById('dashLoading').textContent = 'Failed to load data. Please refresh and try again.';
+  });
+}
+
+function populateFilters() {
+  const months = [...new Set(allResponses.map(r => r.month))];
+  const teams = [...new Set(allEmployees.map(e => e.team))];
+  const names = [...new Set(allEmployees.map(e => e.name))];
+
+  fillSelect('filterMonth', months, 'All months');
+  fillSelect('filterTeam', teams, 'All teams');
+  fillSelect('filterEmployee', names, 'All employees');
+
+  const currentMonth = getMonthLabel(new Date());
+  if (months.includes(currentMonth)) document.getElementById('filterMonth').value = currentMonth;
+}
+
+function fillSelect(id, values, allLabel) {
+  const el = document.getElementById(id);
+  el.innerHTML = '<option value="">' + allLabel + '</option>' +
+    values.map(v => `<option value="${v}">${v}</option>`).join('');
+}
+
+function applyFilters() {
+  const month = document.getElementById('filterMonth').value;
+  const team = document.getElementById('filterTeam').value;
+  const emp = document.getElementById('filterEmployee').value;
+
+  const filtered = allResponses.filter(r =>
+    (!month || r.month === month) &&
+    (!team || r.team === team) &&
+    (!emp || r.employeeName === emp)
+  );
+
+  document.getElementById('resultCount').textContent = filtered.length + ' entries found';
+  document.getElementById('resultsBody').innerHTML = filtered.map(r => `
+    <tr>
+      <td>${r.employeeName}</td>
+      <td>${r.team}</td>
+      <td>${r.client}</td>
+      <td>${r.taskType}</td>
+      <td>${r.month}</td>
+      <td>${r.timestamp}</td>
+    </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:#999;">No entries found</td></tr>';
+
+  renderFillStatus(month || getMonthLabel(new Date()));
+}
+
+function renderFillStatus(monthLabel) {
+  const submittedIds = new Set(
+    allResponses.filter(r => r.month === monthLabel).map(r => r.employeeId)
+  );
+  const rows = allEmployees.map(e => {
+    const filled = submittedIds.has(e.id);
+    return `<tr>
+      <td>${e.name}</td>
+      <td>${e.team}</td>
+      <td><span class="badge ${filled ? 'filled' : 'notfilled'}">${filled ? 'Filled' : 'Not filled'}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('statusBody').innerHTML = rows || '<tr><td colspan="3" style="text-align:center;color:#999;">No employees found</td></tr>';
+}
+</script>
+
+</body>
+</html>
