@@ -479,7 +479,10 @@ function goHome() {
  ****************************************************/
 function initEmployeeView() {
   var today = new Date();
-  var closed = today.getDate() > 5;
+  // TESTING KE LIYE TEMPORARILY DISABLED - dobara enable karne ke liye
+  // neeche wali line ko "today.getDate() > 5" kar dein.
+  var closed = false;
+  // var closed = today.getDate() > 5;
 
   if (closed) {
     document.getElementById("formClosedBox").style.display = "block";
