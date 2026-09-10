@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Tracker</title>
+<style>
+  :root {
+    --ink: #1c2430;
+    --ink-soft: #5b6472;
+    --line: #dde1e7;
+    --paper: #f6f7f9;
+    --card: #ffffff;
+    --accent: #2b5797;
+    --accent-dark: #1f4173;
+    --good: #1a7f4e;
+    --good-bg: #e5f5ec;
+    --bad: #b5342a;
+    --bad-bg: #fbe9e7;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .shell {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 18px 60px;
+  }
+
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0 22px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 26px;
+  }
+
+  header.top .brand {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  header.top .brand span { color: var(--accent); }
+
+  .back-link {
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  .back-link:hover { background: var(--line); color: var(--ink); }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---------- Landing ---------- */
+  #view-landing {
+    display: none;
+    min-height: 60vh;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #view-landing.active { display: flex; }
+
+  .landing-inner h1 {
+    font-size: 26px;
+    margin: 0 0 8px;
+    font-weight: 650;
+  }
+  .landing-inner p {
+    color: var(--ink-soft);
+    margin: 0 0 32px;
+    font-size: 15px;
+  }
+  .landing-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .choice-btn {
+    width: 220px;
+    padding: 22px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--card);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    transition: border-color .15s ease, transform .1s ease;
+  }
+  .choice-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .choice-btn .sub {
+    display: block;
+    font-weight: 400;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+
+  /* ---------- Shared card / form styling ---------- */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 22px 26px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .card h2 {
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .card .hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 20px;
+  }
+
+  .client-row {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 14px 6px;
+    margin-bottom: 12px;
+    background: var(--paper);
+  }
+  .client-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+  .client-row-label {
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--ink);
+  }
+  .remove-client-btn {
+    border: none;
+    background: none;
+    color: var(--bad);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+  .remove-client-btn:hover { text-decoration: underline; }
+
+  .add-client-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px dashed var(--accent);
+    border-radius: 7px;
+    background: none;
+    color: var(--accent);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 4px 0 6px;
+  }
+  .add-client-btn:hover { background: #eaf1fb; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 14px 0 6px;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  input[type="text"], select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 14px;
+    color: var(--ink);
+    background: #fff;
+    font-family: inherit;
+  }
+  input[readonly] {
+    background: var(--paper);
+    color: var(--ink-soft);
+  }
+  input:focus, select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 11px 18px;
+    border-radius: 7px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 18px;
+    width: 100%;
+  }
+  .btn:hover { background: var(--accent-dark); }
+  .btn:disabled { background: #a9b3c1; cursor: not-allowed; }
+
+  .msg {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 7px;
+    font-size: 13.5px;
+  }
+  .msg.error { background: var(--bad-bg); color: var(--bad); }
+  .msg.success { background: var(--good-bg); color: var(--good); }
+  .msg.closed { background: #fff4e0; color: #8a5a00; }
+
+  .center-note {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+    padding: 30px 10px;
+  }
+
+  /* ---------- Admin ---------- */
+  .admin-pin-box { max-width: 340px; margin: 40px auto; }
+
+  .filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .filters .field { flex: 1; min-width: 140px; }
+  .filters label { margin: 0 0 6px; }
+
+  .count-line {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  th { color: var(--ink-soft); font-weight: 600; background: var(--paper); }
+  tr:last-child td { border-bottom: none; }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 650;
+    margin: 34px 0 12px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.filled { background: var(--good-bg); color: var(--good); }
+  .badge.not-filled { background: var(--bad-bg); color: var(--bad); }
+
+  .tabs-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+
+  @media (max-width: 520px) {
+    .landing-buttons { flex-direction: column; align-items: center; }
+    th, td { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">Portfolio <span>Tracker</span></div>
+    <button class="back-link" id="btnBack" style="display:none;" onclick="goHome()">&larr; Back</button>
+  </header>
+
+  <!-- ============ VIEW 1: LANDING ============ -->
+  <div class="view active" id="view-landing">
+    <div class="landing-inner">
+      <h1>Monthly Portfolio Submission</h1>
+      <p>Fill your portfolio for the month, or view the admin dashboard.</p>
+      <div class="landing-buttons">
+        <button class="choice-btn" onclick="showView('employee')">
+          Fill Portfolio
+          <span class="sub">Employees submit here</span>
+        </button>
+        <button class="choice-btn" onclick="showView('admin')">
+          Admin Dashboard
+          <span class="sub">PIN protected</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ VIEW 2: EMPLOYEE FORM ============ -->
+  <div class="view" id="view-employee">
+
+    <!-- Form closed message (shown instead of everything if day > 5) -->
+    <div class="card" id="formClosedBox" style="display:none;">
+      <h2>Form closed</h2>
+      <p class="hint" style="margin:0;">
+        The form for this month is closed. It will reopen from the 1st-5th of next month.
+      </p>
+    </div>
+
+    <!-- Verification step -->
+    <div class="card" id="verifyBox">
+      <h2>Verify Yourself</h2>
+      <p class="hint">Enter your Employee ID or Name.</p>
+      <label for="verifyInput">Employee ID or Name</label>
+      <input type="text" id="verifyInput" placeholder="e.g. EMP1024 or Priya Sharma">
+      <button class="btn" id="verifyBtn" onclick="verifyEmployee()">Verify</button>
+      <div id="verifyMsg"></div>
+    </div>
+
+    <!-- Actual portfolio form -->
+    <div class="card" id="portfolioBox" style="display:none;">
+      <h2>Fill Your Portfolio</h2>
+      <p class="hint" id="portfolioSub"></p>
+
+      <label>Employee Name</label>
+      <input type="text" id="pfName" readonly>
+
+      <label>Team</label>
+      <input type="text" id="pfTeam" readonly>
+
+      <label>Month</label>
+      <input type="text" id="pfMonth" readonly>
+
+      <div class="section-title" style="margin-top:24px; margin-bottom:8px;">Clients</div>
+      <div id="clientRows"></div>
+      <button type="button" class="add-client-btn" id="addClientBtn" onclick="addClientRow()">+ Add another client</button>
+
+      <button class="btn" id="submitBtn" onclick="submitPortfolio()">Submit</button>
+      <div id="submitMsg"></div>
+    </div>
+  </div>
+
+  <!-- ============ VIEW 3: ADMIN DASHBOARD ============ -->
+  <div class="view" id="view-admin">
+
+    <div class="card admin-pin-box" id="pinBox">
+      <h2>Admin Access</h2>
+      <p class="hint">Enter PIN to continue.</p>
+      <label for="pinInput">PIN</label>
+      <input type="text" id="pinInput" placeholder="Enter PIN">
+      <button class="btn" onclick="checkPin()">Enter</button>
+      <div id="pinMsg"></div>
+    </div>
+
+    <div id="adminPanel" style="display:none;">
+
+      <div id="adminLoading" class="center-note">Loading data&hellip;</div>
+
+      <div id="adminContent" style="display:none;">
+        <div class="filters">
+          <div class="field">
+            <label for="filterMonth">Month</label>
+            <select id="filterMonth" onchange="renderTable()"></select>
+          </div>
+          <div class="field">
+            <label for="filterTeam">Team</label>
+            <select id="filterTeam" onchange="renderTable()"></select>
+          </div>
+          <div class="field">
+            <label for="filterEmployee">Employee Name</label>
+            <select id="filterEmployee" onchange="renderTable()"></select>
+          </div>
+        </div>
+
+        <div class="count-line" id="countLine">0 entries found</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Employee Name</th><th>Team</th><th>Client Handle</th>
+                <th>Level</th><th>Month</th><th>Files/Day</th><th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="responsesTbody"></tbody>
+          </table>
+        </div>
+
+        <div class="section-title">Fill Status &mdash; Current Month</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Employee ID</th><th>Employee Name</th><th>Team</th><th>Status</th></tr>
+            </thead>
+            <tbody id="fillStatusTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/****************************************************
+ * CONFIGURATION
+ ****************************************************/
+// PASTE YOUR APPS SCRIPT WEB APP /exec URL HERE
+var API_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
+// CHANGE THIS PIN
+var ADMIN_PIN = "1234";
+
+/****************************************************
+ * STATE
+ ****************************************************/
+var employeesList = [];
+var matchedEmployee = null;
+var adminResponses = [];
+var adminEmployees = [];
+
+var MONTH_NAMES = ["January","February","March","April","May","June",
+  "July","August","September","October","November","December"];
+var currentMonthLabel = MONTH_NAMES[new Date().getMonth()] + " " + new Date().getFullYear();
+
+/****************************************************
+ * VIEW SWITCHING
+ ****************************************************/
+function showView(name) {
+  document.getElementById("view-landing").classList.remove("active");
+  document.getElementById("view-employee").classList.remove("active");
+  document.getElementById("view-admin").classList.remove("active");
+  document.getElementById("btnBack").style.display = "inline-block";
+
+  if (name === "employee") {
+    document.getElementById("view-employee").classList.add("active");
+    initEmployeeView();
+  } else if (name === "admin") {
+    document.getElementById("view-admin").classList.add("active");
+  }
+}
+
+function goHome() {
+  document.getElementById("view-landing").classList.add("active");
+  document.getElementById("view-employee").classList.remove("active");
+  document.getElementById("view-admin").classList.remove("active");
+  document.getElementById("btnBack").style.display = "none";
+}
+
+/****************************************************
+ * EMPLOYEE VIEW
+ ****************************************************/
+function initEmployeeView() {
+  var today = new Date();
+  // TEMPORARILY DISABLED FOR TESTING - to re-enable, change the line
+  // below to "today.getDate() > 5".
+  var closed = false;
+  // var closed = today.getDate() > 5;
+
+  if (closed) {
+    document.getElementById("formClosedBox").style.display = "block";
+    document.getElementById("verifyBox").style.display = "none";
+    document.getElementById("portfolioBox").style.display = "none";
+    return;
+  }
+
+  document.getElementById("formClosedBox").style.display = "none";
+  document.getElementById("verifyBox").style.display = "block";
+
+  if (employeesList.length === 0) {
+    fetchEmployees();
+  }
+}
+
+function fetchEmployees() {
+  fetch(API_URL + "?action=getEmployees")
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      if (json.status === "success") {
+        employeesList = json.data;
+      }
+    })
+    .catch(function(err) {
+      console.error("Failed to load employees", err);
+    });
+}
+
+function verifyEmployee() {
+  var raw = document.getElementById("verifyInput").value.trim().toLowerCase();
+  var msgBox = document.getElementById("verifyMsg");
+  msgBox.innerHTML = "";
+
+  if (!raw) {
+    msgBox.innerHTML = '<div class="msg error">Please enter your Employee ID or Name.</div>';
+    return;
+  }
+
+  if (employeesList.length === 0) {
+    msgBox.innerHTML = '<div class="msg error">Employee list failed to load. Please reload the page.</div>';
+    return;
+  }
+
+  var match = employeesList.find(function(emp) {
+    return emp.id.toLowerCase() === raw || emp.name.toLowerCase() === raw;
+  });
+
+  if (!match) {
+    msgBox.innerHTML = '<div class="msg error">You are not authorized.</div>';
+    return;
+  }
+
+  matchedEmployee = match;
+  document.getElementById("verifyBox").style.display = "none";
+  document.getElementById("portfolioBox").style.display = "block";
+  document.getElementById("pfName").value = match.name;
+  document.getElementById("pfTeam").value = match.team;
+  document.getElementById("pfMonth").value = currentMonthLabel;
+  document.getElementById("portfolioSub").textContent = "Submitting for " + currentMonthLabel;
+  resetClientRows();
+}
+
+/****************************************************
+ * DYNAMIC CLIENT ROWS (up to MAX_CLIENTS per submission)
+ ****************************************************/
+var clientRowCount = 0;
+var MAX_CLIENTS = 10;
+
+function resetClientRows() {
+  document.getElementById("clientRows").innerHTML = "";
+  clientRowCount = 0;
+  addClientRow();
+}
+
+function addClientRow() {
+  var container = document.getElementById("clientRows");
+  var current = container.querySelectorAll(".client-row").length;
+  if (current >= MAX_CLIENTS) return;
+
+  clientRowCount++;
+  var rowId = clientRowCount;
+
+  var div = document.createElement("div");
+  div.className = "client-row";
+  div.setAttribute("data-row", rowId);
+  div.innerHTML =
+    '<div class="client-row-head">' +
+      '<span class="client-row-label"></span>' +
+      '<button type="button" class="remove-client-btn" onclick="removeClientRow(' + rowId + ')">Remove</button>' +
+    '</div>' +
+    '<label>Client Handle</label>' +
+    '<input type="text" class="client-handle" placeholder="Client handle">' +
+    '<label>Level</label>' +
+    '<select class="client-level">' +
+      '<option value="">Select level</option>' +
+      // CHANGE LEVEL OPTIONS HERE
+      '<option value="Drafting">Drafting</option>' +
+      '<option value="Self Finalize">Self Finalize</option>' +
+      '<option value="QC">QC</option>' +
+    '</select>' +
+    '<label>Files/Day</label>' +
+    '<input type="text" class="client-files" inputmode="numeric" placeholder="e.g. 8">';
+
+  container.appendChild(div);
+  refreshClientRowsUI();
+}
+
+function removeClientRow(rowId) {
+  var container = document.getElementById("clientRows");
+  var rows = container.querySelectorAll(".client-row");
+  if (rows.length <= 1) return; // keep at least 1 client row
+
+  var row = container.querySelector('.client-row[data-row="' + rowId + '"]');
+  if (row) row.remove();
+  refreshClientRowsUI();
+}
+
+function refreshClientRowsUI() {
+  var rows = document.querySelectorAll("#clientRows .client-row");
+
+  rows.forEach(function(row, idx) {
+    row.querySelector(".client-row-label").textContent = "Client " + (idx + 1);
+  });
+
+  // Hide the Remove button when only 1 row remains
+  document.querySelectorAll(".remove-client-btn").forEach(function(btn) {
+    btn.style.display = rows.length <= 1 ? "none" : "inline-block";
+  });
+
+  // Hide "Add another client" once MAX_CLIENTS is reached
+  document.getElementById("addClientBtn").style.display =
+    rows.length >= MAX_CLIENTS ? "none" : "block";
+}
+
+function submitPortfolio() {
+  var rows = document.querySelectorAll("#clientRows .client-row");
+  var msgBox = document.getElementById("submitMsg");
+  var btn = document.getElementById("submitBtn");
+  msgBox.innerHTML = "";
+
+  var entries = [];
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    var clientHandle = row.querySelector(".client-handle").value.trim();
+    var level = row.querySelector(".client-level").value;
+    var filesRaw = row.querySelector(".client-files").value.trim();
+
+    if (!clientHandle || !level || !filesRaw) {
+      msgBox.innerHTML = '<div class="msg error">Please fill in all fields (Client Handle, Level, Files/Day) for Client ' + (i + 1) + '.</div>';
+      return;
+    }
+    var filesPerDay = Number(filesRaw);
+    if (isNaN(filesPerDay) || filesPerDay < 0) {
+      msgBox.innerHTML = '<div class="msg error">Files/Day for Client ' + (i + 1) + ' must be a valid number.</div>';
+      return;
+    }
+    entries.push({ clientHandle: clientHandle, level: level, filesPerDay: filesPerDay });
+  }
+
+  var payload = {
+    employeeId: matchedEmployee.id,
+    employeeName: matchedEmployee.name,
+    team: matchedEmployee.team,
+    entries: entries
+  };
+
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  // Content-Type: text/plain used deliberately to avoid a CORS preflight
+  // request, which Apps Script web apps don't handle well.
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  })
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      btn.disabled = false;
+      btn.textContent = "Submit";
+      if (json.status === "success") {
+        msgBox.innerHTML = '<div class="msg success">Thank you! Your portfolio has been submitted.</div>';
+        resetClientRows();
+      } else {
+        msgBox.innerHTML = '<div class="msg error">' + (json.message || "Submission failed.") + '</div>';
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = "Submit";
+      msgBox.innerHTML = '<div class="msg error">Network error. Please try again.</div>';
+      console.error(err);
+    });
+}
+
+/****************************************************
+ * ADMIN VIEW
+ ****************************************************/
+function checkPin() {
+  var entered = document.getElementById("pinInput").value.trim();
+  var msgBox = document.getElementById("pinMsg");
+
+  if (entered === ADMIN_PIN) {
+    document.getElementById("pinBox").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    loadAdminData();
+  } else {
+    msgBox.innerHTML = '<div class="msg error">Incorrect PIN.</div>';
+  }
+}
+
+function loadAdminData() {
+  document.getElementById("adminLoading").style.display = "block";
+  document.getElementById("adminContent").style.display = "none";
+
+  Promise.all([
+    fetch(API_URL + "?action=getEmployees").then(function(r) { return r.json(); }),
+    fetch(API_URL + "?action=getResponses").then(function(r) { return r.json(); })
+  ])
+    .then(function(results) {
+      var empRes = results[0], respRes = results[1];
+      if (empRes.status !== "success" || respRes.status !== "success") {
+        throw new Error("API returned an error");
+      }
+      adminEmployees = empRes.data;
+      adminResponses = respRes.data;
+      buildFilters();
+      renderTable();
+      renderFillStatus();
+      document.getElementById("adminLoading").style.display = "none";
+      document.getElementById("adminContent").style.display = "block";
+    })
+    .catch(function(err) {
+      document.getElementById("adminLoading").innerHTML =
+        '<div class="msg error">Failed to load data. Please check the API_URL or try again.</div>';
+      console.error(err);
+    });
+}
+
+function buildFilters() {
+  var months = uniqueSorted(adminResponses.map(function(r) { return r.month; }));
+  var teams = uniqueSorted(adminResponses.map(function(r) { return r.team; }));
+  var names = uniqueSorted(adminResponses.map(function(r) { return r.employeeName; }));
+
+  fillSelect("filterMonth", months);
+  fillSelect("filterTeam", teams);
+  fillSelect("filterEmployee", names);
+}
+
+function uniqueSorted(arr) {
+  var seen = {};
+  var out = [];
+  arr.forEach(function(v) {
+    if (v && !seen[v]) { seen[v] = true; out.push(v); }
+  });
+  out.sort();
+  return out;
+}
+
+function fillSelect(id, values) {
+  var sel = document.getElementById(id);
+  sel.innerHTML = '<option value="All">All</option>';
+  values.forEach(function(v) {
+    var opt = document.createElement("option");
+    opt.value = v;
+    opt.textContent = v;
+    sel.appendChild(opt);
+  });
+}
+
+function renderTable() {
+  var month = document.getElementById("filterMonth").value;
+  var team = document.getElementById("filterTeam").value;
+  var name = document.getElementById("filterEmployee").value;
+
+  var filtered = adminResponses.filter(function(r) {
+    return (month === "All" || r.month === month) &&
+           (team === "All" || r.team === team) &&
+           (name === "All" || r.employeeName === name);
+  });
+
+  var tbody = document.getElementById("responsesTbody");
+  tbody.innerHTML = "";
+  filtered.forEach(function(r) {
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + escapeHtml(r.employeeName) + "</td>" +
+      "<td>" + escapeHtml(r.team) + "</td>" +
+      "<td>" + escapeHtml(r.clientHandle) + "</td>" +
+      "<td>" + escapeHtml(r.level) + "</td>" +
+      "<td>" + escapeHtml(r.month) + "</td>" +
+      "<td>" + escapeHtml(r.filesPerDay) + "</td>" +
+      "<td>" + escapeHtml(r.timestamp) + "</td>";
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("countLine").textContent = filtered.length + " entries found";
+}
+
+function renderFillStatus() {
+  var tbody = document.getElementById("fillStatusTbody");
+  tbody.innerHTML = "";
+
+  var filledIds = {};
+  adminResponses.forEach(function(r) {
+    if (r.month === currentMonthLabel) filledIds[r.employeeId] = true;
+  });
+
+  adminEmployees.forEach(function(emp) {
+    var isFilled = !!filledIds[emp.id];
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + escapeHtml(emp.id) + "</td>" +
+      "<td>" + escapeHtml(emp.name) + "</td>" +
+      "<td>" + escapeHtml(emp.team) + "</td>" +
+      "<td><span class='badge " + (isFilled ? "filled" : "not-filled") + "'>" +
+      (isFilled ? "Filled" : "Not Filled") + "</span></td>";
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(str) {
+  var div = document.createElement("div");
+  div.textContent = str == null ? "" : String(str);
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
