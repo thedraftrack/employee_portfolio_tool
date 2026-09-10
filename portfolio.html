@@ -192,8 +192,7 @@ function getMonthLabel(d) {
   return d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 }
 function isFormOpen() {
-  const day = new Date().getDate();
-  return day <= 5;
+  return true;
 }
 
 // ============ EMPLOYEE VERIFY + FORM ============
