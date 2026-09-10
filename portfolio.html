@@ -330,15 +330,15 @@
     <div class="card" id="formClosedBox" style="display:none;">
       <h2>Form closed</h2>
       <p class="hint" style="margin:0;">
-        Is mahine ka form band ho chuka hai. Agla form agle mahine ki 1-5 tareek ko khulega.
+        The form for this month is closed. It will reopen from the 1st-5th of next month.
       </p>
     </div>
 
     <!-- Verification step -->
     <div class="card" id="verifyBox">
       <h2>Verify Yourself</h2>
-      <p class="hint">Apna Employee ID ya Naam likhein.</p>
-      <label for="verifyInput">Employee ID ya Naam</label>
+      <p class="hint">Enter your Employee ID or Name.</p>
+      <label for="verifyInput">Employee ID or Name</label>
       <input type="text" id="verifyInput" placeholder="e.g. EMP1024 or Priya Sharma">
       <button class="btn" id="verifyBtn" onclick="verifyEmployee()">Verify</button>
       <div id="verifyMsg"></div>
@@ -436,7 +436,7 @@
 var API_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
 
 // CHANGE THIS PIN
-var ADMIN_PIN = "1234";
+var ADMIN_PIN = "4567";
 
 /****************************************************
  * STATE
@@ -479,8 +479,8 @@ function goHome() {
  ****************************************************/
 function initEmployeeView() {
   var today = new Date();
-  // TESTING KE LIYE TEMPORARILY DISABLED - dobara enable karne ke liye
-  // neeche wali line ko "today.getDate() > 5" kar dein.
+  // TEMPORARILY DISABLED FOR TESTING - to re-enable, change the line
+  // below to "today.getDate() > 5".
   var closed = false;
   // var closed = today.getDate() > 5;
 
@@ -518,12 +518,12 @@ function verifyEmployee() {
   msgBox.innerHTML = "";
 
   if (!raw) {
-    msgBox.innerHTML = '<div class="msg error">Kripya Employee ID ya Naam likhein.</div>';
+    msgBox.innerHTML = '<div class="msg error">Please enter your Employee ID or Name.</div>';
     return;
   }
 
   if (employeesList.length === 0) {
-    msgBox.innerHTML = '<div class="msg error">Employee list load nahi ho payi. Page reload karein.</div>';
+    msgBox.innerHTML = '<div class="msg error">Employee list failed to load. Please reload the page.</div>';
     return;
   }
 
@@ -532,7 +532,7 @@ function verifyEmployee() {
   });
 
   if (!match) {
-    msgBox.innerHTML = '<div class="msg error">Aap authorized nahi hain.</div>';
+    msgBox.innerHTML = '<div class="msg error">You are not authorized.</div>';
     return;
   }
 
@@ -594,7 +594,7 @@ function addClientRow() {
 function removeClientRow(rowId) {
   var container = document.getElementById("clientRows");
   var rows = container.querySelectorAll(".client-row");
-  if (rows.length <= 1) return; // kam se kam 1 client row zaroori hai
+  if (rows.length <= 1) return; // keep at least 1 client row
 
   var row = container.querySelector('.client-row[data-row="' + rowId + '"]');
   if (row) row.remove();
@@ -608,12 +608,12 @@ function refreshClientRowsUI() {
     row.querySelector(".client-row-label").textContent = "Client " + (idx + 1);
   });
 
-  // Sirf 1 row bachi ho to uska Remove button chhupa dein
+  // Hide the Remove button when only 1 row remains
   document.querySelectorAll(".remove-client-btn").forEach(function(btn) {
     btn.style.display = rows.length <= 1 ? "none" : "inline-block";
   });
 
-  // MAX_CLIENTS tak pahunchne par "Add another client" chhupa dein
+  // Hide "Add another client" once MAX_CLIENTS is reached
   document.getElementById("addClientBtn").style.display =
     rows.length >= MAX_CLIENTS ? "none" : "block";
 }
@@ -632,12 +632,12 @@ function submitPortfolio() {
     var filesRaw = row.querySelector(".client-files").value.trim();
 
     if (!clientHandle || !level || !filesRaw) {
-      msgBox.innerHTML = '<div class="msg error">Client ' + (i + 1) + ' ke sab fields (Client Handle, Level, Files/Day) fill karein.</div>';
+      msgBox.innerHTML = '<div class="msg error">Please fill in all fields (Client Handle, Level, Files/Day) for Client ' + (i + 1) + '.</div>';
       return;
     }
     var filesPerDay = Number(filesRaw);
     if (isNaN(filesPerDay) || filesPerDay < 0) {
-      msgBox.innerHTML = '<div class="msg error">Client ' + (i + 1) + ' ka Files/Day ek valid number hona chahiye.</div>';
+      msgBox.innerHTML = '<div class="msg error">Files/Day for Client ' + (i + 1) + ' must be a valid number.</div>';
       return;
     }
     entries.push({ clientHandle: clientHandle, level: level, filesPerDay: filesPerDay });
@@ -665,7 +665,7 @@ function submitPortfolio() {
       btn.disabled = false;
       btn.textContent = "Submit";
       if (json.status === "success") {
-        msgBox.innerHTML = '<div class="msg success">Dhanyawad! Aapka portfolio submit ho gaya hai.</div>';
+        msgBox.innerHTML = '<div class="msg success">Thank you! Your portfolio has been submitted.</div>';
         resetClientRows();
       } else {
         msgBox.innerHTML = '<div class="msg error">' + (json.message || "Submission failed.") + '</div>';
@@ -674,7 +674,7 @@ function submitPortfolio() {
     .catch(function(err) {
       btn.disabled = false;
       btn.textContent = "Submit";
-      msgBox.innerHTML = '<div class="msg error">Network error. Kripya phir try karein.</div>';
+      msgBox.innerHTML = '<div class="msg error">Network error. Please try again.</div>';
       console.error(err);
     });
 }
@@ -691,7 +691,7 @@ function checkPin() {
     document.getElementById("adminPanel").style.display = "block";
     loadAdminData();
   } else {
-    msgBox.innerHTML = '<div class="msg error">Galat PIN.</div>';
+    msgBox.innerHTML = '<div class="msg error">Incorrect PIN.</div>';
   }
 }
 
@@ -718,7 +718,7 @@ function loadAdminData() {
     })
     .catch(function(err) {
       document.getElementById("adminLoading").innerHTML =
-        '<div class="msg error">Data load nahi ho paya. Kripya API_URL check karein ya phir try karein.</div>';
+        '<div class="msg error">Failed to load data. Please check the API_URL or try again.</div>';
       console.error(err);
     });
 }
