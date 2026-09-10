@@ -113,16 +113,19 @@
   <label>Team</label>
   <input type="text" id="formTeam" readonly>
 
-  <label>Client name</label>
-  <input type="text" id="formClient" placeholder="Enter client name">
+  <label>Client handle</label>
+  <input type="text" id="formClient" placeholder="Enter client handle">
 
-  <label>Task type</label>
+  <label>Level</label>
   <select id="formTaskType">
-    <option value="">Select task type</option>
+    <option value="">Select level</option>
     <option value="Drafting">Drafting</option>
     <option value="Self Finalize">Self Finalize</option>
     <option value="QC">QC</option>
   </select>
+
+  <label>Files/day</label>
+  <input type="number" id="formFilesPerDay" min="0" step="1" placeholder="e.g. 5">
 
   <label>Month</label>
   <input type="text" id="formMonth" readonly>
@@ -162,7 +165,7 @@
     <div class="count" id="resultCount"></div>
     <table id="resultsTable">
       <thead>
-        <tr><th>Employee</th><th>Team</th><th>Client</th><th>Task type</th><th>Month</th><th>Submitted</th></tr>
+        <tr><th>Employee</th><th>Team</th><th>Client handle</th><th>Level</th><th>Files/day</th><th>Month</th><th>Submitted</th></tr>
       </thead>
       <tbody id="resultsBody"></tbody>
     </table>
@@ -178,7 +181,7 @@
 <script>
 // ============ CONFIG ============
 const API_URL = "https://script.google.com/macros/s/AKfycbw-5sSznka6TBmxqS5LlwFH00sSEyQoDNgl46fbjA3Q7BPcexXhFKeE8oxwqAyf1eVP4w/exec";
-const ADMIN_PIN = "Admin@456"; // CHANGE THIS before going live
+const ADMIN_PIN = "CHANGE_THIS_PIN_1234"; // CHANGE THIS before going live
 
 // ============ VIEW SWITCHING ============
 function showView(name) {
@@ -192,7 +195,8 @@ function getMonthLabel(d) {
   return d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 }
 function isFormOpen() {
-  return true;
+  const day = new Date().getDate();
+  return day <= 5;
 }
 
 // ============ EMPLOYEE VERIFY + FORM ============
@@ -242,6 +246,7 @@ function openForm(emp) {
   document.getElementById('formMonth').value = getMonthLabel(new Date());
   document.getElementById('formClient').value = '';
   document.getElementById('formTaskType').value = '';
+  document.getElementById('formFilesPerDay').value = '';
   document.getElementById('formError').style.display = 'none';
   document.getElementById('formSuccess').style.display = 'none';
   document.getElementById('formSubtitle').textContent = 'Verified as ' + emp.name;
@@ -249,15 +254,16 @@ function openForm(emp) {
 }
 
 function submitForm() {
-  const client = document.getElementById('formClient').value.trim();
-  const taskType = document.getElementById('formTaskType').value;
+  const clientHandle = document.getElementById('formClient').value.trim();
+  const level = document.getElementById('formTaskType').value;
+  const filesPerDay = document.getElementById('formFilesPerDay').value;
   const errEl = document.getElementById('formError');
   const okEl = document.getElementById('formSuccess');
   errEl.style.display = 'none';
   okEl.style.display = 'none';
 
-  if (!client || !taskType) {
-    errEl.textContent = 'Please fill in client name and task type.';
+  if (!clientHandle || !level) {
+    errEl.textContent = 'Please fill in client handle and level.';
     errEl.style.display = 'block';
     return;
   }
@@ -271,8 +277,9 @@ function submitForm() {
     employeeId: matchedEmployee.id,
     employeeName: matchedEmployee.name,
     team: matchedEmployee.team,
-    client: client,
-    taskType: taskType
+    clientHandle: clientHandle,
+    level: level,
+    filesPerDay: filesPerDay
   };
 
   fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
@@ -282,6 +289,7 @@ function submitForm() {
         okEl.style.display = 'block';
         document.getElementById('formClient').value = '';
         document.getElementById('formTaskType').value = '';
+        document.getElementById('formFilesPerDay').value = '';
       } else {
         errEl.textContent = res.message || 'Something went wrong. Please try again.';
         errEl.style.display = 'block';
@@ -365,11 +373,12 @@ function applyFilters() {
     <tr>
       <td>${r.employeeName}</td>
       <td>${r.team}</td>
-      <td>${r.client}</td>
-      <td>${r.taskType}</td>
+      <td>${r.clientHandle}</td>
+      <td>${r.level}</td>
+      <td>${r.filesPerDay}</td>
       <td>${r.month}</td>
       <td>${r.timestamp}</td>
-    </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:#999;">No entries found</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:#999;">No entries found</td></tr>';
 
   renderFillStatus(month || getMonthLabel(new Date()));
 }
