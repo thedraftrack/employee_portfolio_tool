@@ -3,16 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio Tracker</title>
+<title>TDR Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #1c2430;
     --ink-soft: #5b6472;
-    --line: #dde1e7;
-    --paper: #f6f7f9;
+    --ink-faint: #8891a0;
+    --line: #dfe2e6;
+    --paper: #f7f6f2;
     --card: #ffffff;
-    --accent: #2b5797;
-    --accent-dark: #1f4173;
+    --accent: #2f6f62;
+    --accent-dark: #204d43;
+    --accent-soft-bg: #e6f0ed;
     --good: #1a7f4e;
     --good-bg: #e5f5ec;
     --bad: #b5342a;
@@ -26,14 +31,14 @@
 
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--paper);
     color: var(--ink);
     line-height: 1.5;
   }
 
   .shell {
-    max-width: 960px;
+    max-width: 1040px;
     margin: 0 auto;
     padding: 24px 18px 60px;
   }
@@ -46,15 +51,25 @@
     gap: 12px;
     padding: 6px 0 22px;
     border-bottom: 1px solid var(--line);
-    margin-bottom: 26px;
+    margin-bottom: 30px;
   }
 
-  header.top .brand {
-    font-size: 17px;
-    font-weight: 600;
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-logo {
+    height: 34px;
+    width: auto;
+    display: block;
+  }
+  .brand-name {
+    font-size: 18px;
+    font-weight: 700;
     letter-spacing: -0.01em;
   }
-  header.top .brand span { color: var(--accent); }
+  .brand-name span { color: var(--accent); }
 
   .header-actions {
     display: flex;
@@ -71,6 +86,7 @@
     background: none;
     padding: 8px 10px;
     border-radius: 6px;
+    font-family: inherit;
   }
   .back-link:hover { background: var(--line); color: var(--ink); }
 
@@ -83,6 +99,7 @@
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    font-family: inherit;
   }
   .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
   .nav-btn-primary {
@@ -100,12 +117,13 @@
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 22px 22px 26px;
+    padding: 26px 26px 28px;
     max-width: 480px;
     margin: 0 auto;
   }
-  .card h2 { font-size: 18px; margin: 0 0 4px; }
-  .card .hint { font-size: 13px; color: var(--ink-soft); margin: 0 0 20px; }
+  .card.wide-card { max-width: 640px; padding: 28px 30px 32px; }
+  .card h2 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .card .hint { font-size: 13.5px; color: var(--ink-soft); margin: 0 0 20px; }
 
   label {
     display: block;
@@ -116,7 +134,7 @@
   }
   label:first-of-type { margin-top: 0; }
 
-  input[type="text"], input[type="password"], select {
+  input[type="text"], input[type="password"], select, textarea {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--line);
@@ -126,12 +144,16 @@
     background: #fff;
     font-family: inherit;
   }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
   input[readonly] { background: var(--paper); color: var(--ink-soft); }
-  input:focus, select:focus {
+  input:focus, select:focus, textarea:focus {
     outline: 2px solid var(--accent);
     outline-offset: 1px;
     border-color: var(--accent);
   }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235b6472'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.1l3.71-3.87a.75.75 0 111.08 1.04l-4.25 4.43a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 32px; }
+
+  .helper-text { font-size: 12px; color: var(--ink-faint); margin-top: 5px; }
 
   .btn {
     display: inline-block;
@@ -141,13 +163,24 @@
     background: var(--accent);
     color: #fff;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 650;
     cursor: pointer;
     margin-top: 18px;
     width: 100%;
+    font-family: inherit;
   }
   .btn:hover { background: var(--accent-dark); }
   .btn:disabled { background: #a9b3c1; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-secondary:hover { background: var(--paper); border-color: var(--ink-faint); color: var(--ink); }
+
+  .step-nav { display: flex; gap: 10px; }
+  .step-nav .btn { margin-top: 20px; }
 
   .msg {
     margin-top: 14px;
@@ -164,6 +197,56 @@
     font-size: 14px;
     padding: 30px 10px;
   }
+
+  /* ---------- Stepper (employee form) ---------- */
+  .stepper-head {
+    display: flex;
+    align-items: center;
+    margin-bottom: 26px;
+  }
+  .step-indicator {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+  }
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-label {
+    font-size: 12.5px;
+    font-weight: 650;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .step-indicator.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-indicator.active .step-label { color: var(--ink); }
+  .step-indicator.completed .step-num { background: var(--accent-soft-bg); border-color: var(--accent); color: var(--accent); }
+  .step-indicator.completed .step-label { color: var(--ink-soft); }
+  .step-connector {
+    flex: 1;
+    height: 1.5px;
+    background: var(--line);
+    margin: 0 10px;
+  }
+
+  @media (max-width: 480px) {
+    .step-label { display: none; }
+    .step-connector { margin: 0 6px; }
+  }
+
+  .step-pane { }
 
   /* ---------- Client rows (employee form) ---------- */
   .client-row {
@@ -188,6 +271,7 @@
     font-weight: 600;
     cursor: pointer;
     padding: 4px 6px;
+    font-family: inherit;
   }
   .remove-client-btn:hover { text-decoration: underline; }
 
@@ -203,8 +287,9 @@
     font-weight: 600;
     cursor: pointer;
     margin: 4px 0 6px;
+    font-family: inherit;
   }
-  .add-client-btn:hover { background: #eaf1fb; }
+  .add-client-btn:hover { background: var(--accent-soft-bg); }
 
   .level-checks {
     display: flex;
@@ -221,7 +306,7 @@
     color: var(--ink);
     cursor: pointer;
   }
-  .level-check input[type="checkbox"] { width: 16px; height: 16px; }
+  .level-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); }
 
   .level-files-block {
     border: 1px solid var(--line);
@@ -232,10 +317,46 @@
   }
   .level-files-block label { margin: 0 0 6px; font-size: 12.5px; }
 
-  /* ---------- Filters / tables (shared by admin) ---------- */
-  .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-  .filters .field { flex: 1; min-width: 140px; }
-  .filters label { margin: 0 0 6px; }
+  /* ---------- Admin: tab bar ---------- */
+  .tab-bar {
+    display: flex;
+    gap: 26px;
+    border-bottom: 1.5px solid var(--line);
+    margin-bottom: 22px;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 2px 12px;
+    font-size: 14px;
+    font-weight: 650;
+    color: var(--ink-faint);
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    font-family: inherit;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ---------- Filters toolbar ---------- */
+  .filters-toolbar {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+    margin-bottom: 20px;
+  }
+  .filters-toolbar .field { display: flex; flex-direction: column; gap: 6px; flex: 1 1 160px; min-width: 150px; }
+  .filters-toolbar label { margin: 0; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-faint); }
+  .filters-toolbar select { padding: 9px 30px 9px 11px; font-size: 13.5px; }
 
   .count-line { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 14px; }
 
@@ -248,14 +369,14 @@
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   th, td {
     text-align: left;
-    padding: 10px 12px;
+    padding: 11px 14px;
     border-bottom: 1px solid var(--line);
     white-space: nowrap;
   }
-  th { color: var(--ink-soft); font-weight: 600; background: var(--paper); }
+  th { color: var(--ink-faint); font-weight: 650; background: var(--paper); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
   tr:last-child td { border-bottom: none; }
 
-  .section-title { font-size: 15px; font-weight: 650; margin: 34px 0 12px; }
+  .panel-title { font-size: 15px; font-weight: 700; margin: 0 0 14px; }
 
   .badge {
     display: inline-block;
@@ -277,9 +398,14 @@
   .submission-card {
     background: var(--card);
     border: 1px solid var(--line);
+    border-left: 4px solid var(--line);
     border-radius: 10px;
     padding: 16px;
   }
+  .submission-card.status-pending { border-left-color: var(--pending); }
+  .submission-card.status-approved { border-left-color: var(--good); }
+  .submission-card.status-rejected { border-left-color: var(--bad); }
+
   .card-top {
     display: flex;
     justify-content: space-between;
@@ -302,6 +428,8 @@
   .status-badge.status-rejected { background: var(--bad-bg); color: var(--bad); }
 
   .card-approved-by { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
+  .card-skill-target { font-size: 12px; color: var(--ink-soft); margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .card-skill-target strong { color: var(--ink); font-weight: 650; }
 
   .card-clients { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
   .client-chip { background: var(--paper); border-radius: 7px; padding: 8px 10px; }
@@ -318,6 +446,7 @@
     font-weight: 600;
     cursor: pointer;
     background: #fff;
+    font-family: inherit;
   }
   .approve-btn { color: var(--good); border-color: var(--good); }
   .approve-btn:hover { background: var(--good-bg); }
@@ -328,6 +457,7 @@
 
   @media (max-width: 520px) {
     th, td { padding: 8px; }
+    .filters-toolbar { padding: 14px; }
   }
 </style>
 </head>
@@ -335,7 +465,10 @@
 
 <div class="shell">
   <header class="top">
-    <div class="brand">Portfolio <span>Tracker</span></div>
+    <div class="brand">
+      <img src="data:image/png;base64,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" alt="The Draft Rack" class="brand-logo">
+      <span class="brand-name">TDR <span>Portfolio</span></span>
+    </div>
     <div class="header-actions">
       <button class="back-link" id="btnBack" style="display:none;" onclick="goToForm()">&larr; Back to Form</button>
       <button class="nav-btn" onclick="showView('tl')">Team Lead Portal</button>
@@ -357,33 +490,80 @@
     <!-- Verification step -->
     <div class="card" id="verifyBox">
       <h2>Verify Yourself</h2>
-      <p class="hint">Enter your Employee ID or Name.</p>
-      <label for="verifyInput">Employee ID or Name</label>
-      <input type="text" id="verifyInput" placeholder="e.g. EMP1024 or Priya Sharma">
+      <p class="hint">Enter your Employee Name.</p>
+      <label for="verifyInput">Employee Name</label>
+      <input type="text" id="verifyInput" placeholder="e.g. Priya Sharma">
       <button class="btn" onclick="verifyEmployee()">Verify</button>
       <div id="verifyMsg"></div>
     </div>
 
-    <!-- Actual portfolio form -->
-    <div class="card" id="portfolioBox" style="display:none;">
-      <h2>Fill Your Portfolio</h2>
-      <p class="hint" id="portfolioSub"></p>
+    <!-- Actual portfolio form: 3-step stepper -->
+    <div class="card wide-card" id="portfolioBox" style="display:none;">
 
-      <label>Employee Name</label>
-      <input type="text" id="pfName" readonly>
+      <div class="stepper-head">
+        <div class="step-indicator" data-step="1">
+          <span class="step-num">1</span><span class="step-label">Personal Details</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-indicator" data-step="2">
+          <span class="step-num">2</span><span class="step-label">Client Details</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-indicator" data-step="3">
+          <span class="step-num">3</span><span class="step-label">Skill Development</span>
+        </div>
+      </div>
 
-      <label>Team</label>
-      <input type="text" id="pfTeam" readonly>
+      <!-- STEP 1: Personal Details -->
+      <div class="step-pane" data-pane="1">
+        <h2>Personal Details</h2>
+        <p class="hint" id="portfolioSub"></p>
 
-      <label>Month</label>
-      <input type="text" id="pfMonth" readonly>
+        <label>Employee Name</label>
+        <input type="text" id="pfName" readonly>
 
-      <div class="section-title" style="margin-top:24px; margin-bottom:8px;">Clients</div>
-      <div id="clientRows"></div>
-      <button type="button" class="add-client-btn" id="addClientBtn" onclick="addClientRow()">+ Add another client</button>
+        <label>Team</label>
+        <input type="text" id="pfTeam" readonly>
 
-      <button class="btn" id="submitBtn" onclick="submitPortfolio()">Submit</button>
-      <div id="submitMsg"></div>
+        <label>Month</label>
+        <input type="text" id="pfMonth" readonly>
+
+        <div class="step-nav">
+          <button class="btn" onclick="goToStep(2)">Continue to Client Details</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Client Details -->
+      <div class="step-pane" data-pane="2" style="display:none;">
+        <h2>Client Details</h2>
+        <p class="hint">Select a client, choose one or more levels, and enter Files/Day for each.</p>
+
+        <div id="clientRows"></div>
+        <button type="button" class="add-client-btn" id="addClientBtn" onclick="addClientRow()">+ Add another client</button>
+        <div id="step2Msg"></div>
+
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(1)">Back</button>
+          <button class="btn" onclick="validateAndGoToStep3()">Continue to Skill Development</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Skill Development -->
+      <div class="step-pane" data-pane="3" style="display:none;">
+        <h2>Skill Development</h2>
+        <p class="hint">Set your monthly skill target or goal. This is saved along with your submission.</p>
+
+        <label for="skillTarget">Monthly Skill Target / Goal</label>
+        <textarea id="skillTarget" rows="5" placeholder="e.g. Improve QC turnaround speed, learn advanced editing techniques, reduce revision rate..."></textarea>
+        <div class="helper-text">Optional, but recommended &mdash; visible to your Team Lead and Admin.</div>
+
+        <div class="step-nav">
+          <button class="btn btn-secondary" onclick="goToStep(2)">Back</button>
+          <button class="btn" id="submitBtn" onclick="submitPortfolio()">Submit Portfolio</button>
+        </div>
+        <div id="submitMsg"></div>
+      </div>
+
     </div>
   </div>
 
@@ -403,52 +583,69 @@
       <div id="adminLoading" class="center-note">Loading data&hellip;</div>
 
       <div id="adminContent" style="display:none;">
-        <div class="filters">
-          <div class="field">
-            <label for="filterMonth">Month</label>
-            <select id="filterMonth" onchange="renderAdminCards()"></select>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="submissions" onclick="showAdminTab('submissions')">Submissions</button>
+          <button class="tab-btn" data-tab="fillstatus" onclick="showAdminTab('fillstatus')">Fill Status</button>
+          <button class="tab-btn" data-tab="activity" onclick="showAdminTab('activity')">Activity Log</button>
+        </div>
+
+        <!-- TAB: Submissions -->
+        <div class="tab-panel active" data-tabpanel="submissions">
+          <div class="filters-toolbar">
+            <div class="field">
+              <label for="filterMonth">Month</label>
+              <select id="filterMonth" onchange="renderAdminCards()"></select>
+            </div>
+            <div class="field">
+              <label for="filterTeam">Team</label>
+              <select id="filterTeam" onchange="renderAdminCards()"></select>
+            </div>
+            <div class="field">
+              <label for="filterEmployee">Employee Name</label>
+              <select id="filterEmployee" onchange="renderAdminCards()"></select>
+            </div>
+            <div class="field">
+              <label for="filterStatus">Status</label>
+              <select id="filterStatus" onchange="renderAdminCards()">
+                <option value="All">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
           </div>
-          <div class="field">
-            <label for="filterTeam">Team</label>
-            <select id="filterTeam" onchange="renderAdminCards()"></select>
-          </div>
-          <div class="field">
-            <label for="filterEmployee">Employee Name</label>
-            <select id="filterEmployee" onchange="renderAdminCards()"></select>
-          </div>
-          <div class="field">
-            <label for="filterStatus">Status</label>
-            <select id="filterStatus" onchange="renderAdminCards()">
-              <option value="All">All</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
+
+          <div class="count-line" id="countLine">0 submissions found</div>
+          <div class="cards-grid" id="submissionCards"></div>
+        </div>
+
+        <!-- TAB: Fill Status -->
+        <div class="tab-panel" data-tabpanel="fillstatus">
+          <div class="panel-title">Fill Status &mdash; Current Month</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Employee Name</th><th>Team</th><th>Status</th></tr>
+              </thead>
+              <tbody id="fillStatusTbody"></tbody>
+            </table>
           </div>
         </div>
 
-        <div class="count-line" id="countLine">0 submissions found</div>
-        <div class="cards-grid" id="submissionCards"></div>
-
-        <div class="section-title">Fill Status &mdash; Current Month</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Employee ID</th><th>Employee Name</th><th>Team</th><th>Status</th></tr>
-            </thead>
-            <tbody id="fillStatusTbody"></tbody>
-          </table>
+        <!-- TAB: Activity Log -->
+        <div class="tab-panel" data-tabpanel="activity">
+          <div class="panel-title">Activity Log</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Timestamp</th><th>Event</th><th>Actor</th><th>Details</th></tr>
+              </thead>
+              <tbody id="activityLogTbody"></tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="section-title">Activity Log</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Timestamp</th><th>Event</th><th>Actor</th><th>Details</th></tr>
-            </thead>
-            <tbody id="activityLogTbody"></tbody>
-          </table>
-        </div>
       </div>
     </div>
   </div>
@@ -456,15 +653,27 @@
   <!-- ============ VIEW: TEAM LEAD PORTAL ============ -->
   <div class="view" id="view-tl">
 
-    <div class="card admin-pin-box" id="tlVerifyBox">
+    <!-- Step A: TL PIN gate -->
+    <div class="card admin-pin-box" id="tlPinBox">
       <h2>Team Lead Portal</h2>
-      <p class="hint">Enter your Employee ID or Name to verify.</p>
-      <label for="tlInput">Employee ID or Name</label>
-      <input type="text" id="tlInput" placeholder="e.g. EMP1024 or Priya Sharma">
+      <p class="hint">Enter the Team Lead PIN to continue.</p>
+      <label for="tlPinInput">PIN</label>
+      <input type="password" id="tlPinInput" placeholder="Enter PIN">
+      <button class="btn" onclick="checkTLPin(this)">Enter</button>
+      <div id="tlPinMsg"></div>
+    </div>
+
+    <!-- Step B: TL identity verification -->
+    <div class="card admin-pin-box" id="tlVerifyBox" style="display:none;">
+      <h2>Verify Team Lead</h2>
+      <p class="hint">Enter your Employee Name.</p>
+      <label for="tlInput">Employee Name</label>
+      <input type="text" id="tlInput" placeholder="e.g. Priya Sharma">
       <button class="btn" onclick="verifyTL()">Verify</button>
       <div id="tlVerifyMsg"></div>
     </div>
 
+    <!-- Step C: TL panel -->
     <div id="tlPanel" style="display:none;">
       <div class="tl-header">Team: <strong id="tlTeamLabel"></strong></div>
       <div id="tlActionMsg"></div>
@@ -482,8 +691,9 @@
 // PASTE YOUR APPS SCRIPT WEB APP /exec URL HERE
 var API_URL = "https://script.google.com/macros/s/AKfycbwqhHQkH7Nha2AKeTRIHzvGfGIAqxK4edGa7FYCcXwM3wA5sD4O44l8jRQHVLnZ1hNG/exec";
 
-// Admin PIN is checked on the backend (Code.gs), NOT here - so it never
-// appears in the page source. Change it in Code.gs, not in this file.
+// Admin PIN and Team Lead PIN are both checked on the backend (Code.gs),
+// NOT here - so they never appear in the page source. Change them in
+// Code.gs, not in this file.
 
 // CHANGE LEVEL OPTIONS HERE if needed (must match Code.gs LEVEL_OPTIONS
 // and the Drafting/Self Finalize/QC columns in Portfolio Responses)
@@ -493,8 +703,10 @@ var LEVEL_OPTIONS = ["Drafting", "Self Finalize", "QC"];
  * STATE
  ****************************************************/
 var employeesList = [];
+var clientsList = []; // [{ handle, team }, ...] from Client Master - filtered per-employee by team
 var matchedEmployee = null;
 var matchedTL = null;
+var tlPinValue = "";
 
 var adminResponses = [];
 var adminEmployees = [];
@@ -543,6 +755,7 @@ function initEmployeeView() {
   document.getElementById("verifyBox").style.display = "block";
 
   if (employeesList.length === 0) fetchEmployees();
+  if (clientsList.length === 0) fetchClients();
 }
 
 function fetchEmployees() {
@@ -556,13 +769,27 @@ function fetchEmployees() {
     });
 }
 
+function fetchClients() {
+  fetch(API_URL + "?action=getClients")
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      if (json.status === "success") {
+        clientsList = json.data;
+        refreshClientSelectOptions();
+      }
+    })
+    .catch(function(err) {
+      console.error("Failed to load clients", err);
+    });
+}
+
 function verifyEmployee() {
   var raw = document.getElementById("verifyInput").value.trim().toLowerCase();
   var msgBox = document.getElementById("verifyMsg");
   msgBox.innerHTML = "";
 
   if (!raw) {
-    msgBox.innerHTML = '<div class="msg error">Please enter your Employee ID or Name.</div>';
+    msgBox.innerHTML = '<div class="msg error">Please enter your Employee Name.</div>';
     return;
   }
   if (employeesList.length === 0) {
@@ -571,7 +798,7 @@ function verifyEmployee() {
   }
 
   var match = employeesList.find(function(emp) {
-    return emp.id.toLowerCase() === raw || emp.name.toLowerCase() === raw;
+    return emp.name.toLowerCase() === raw;
   });
 
   if (!match) {
@@ -586,19 +813,77 @@ function verifyEmployee() {
   document.getElementById("pfTeam").value = match.team;
   document.getElementById("pfMonth").value = currentMonthLabel;
   document.getElementById("portfolioSub").textContent = "Submitting for " + currentMonthLabel;
+  document.getElementById("skillTarget").value = "";
   resetClientRows();
+  goToStep(1);
+}
+
+/****************************************************
+ * STEPPER NAVIGATION
+ ****************************************************/
+var currentStep = 1;
+
+function goToStep(n) {
+  currentStep = n;
+
+  document.querySelectorAll(".step-pane").forEach(function(pane) {
+    var paneNum = Number(pane.getAttribute("data-pane"));
+    pane.style.display = (paneNum === n) ? "block" : "none";
+  });
+
+  document.querySelectorAll(".step-indicator").forEach(function(ind) {
+    var s = Number(ind.getAttribute("data-step"));
+    ind.classList.remove("active", "completed");
+    if (s === n) ind.classList.add("active");
+    else if (s < n) ind.classList.add("completed");
+  });
+
+  if (n === 2) refreshClientSelectOptions();
+
+  document.getElementById("portfolioBox").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /****************************************************
  * DYNAMIC CLIENT ROWS (up to MAX_CLIENTS per submission)
  ****************************************************/
 var clientRowCount = 0;
-var MAX_CLIENTS = 25;
+var MAX_CLIENTS = 35;
 
 function resetClientRows() {
   document.getElementById("clientRows").innerHTML = "";
+  document.getElementById("step2Msg").innerHTML = "";
   clientRowCount = 0;
   addClientRow();
+}
+
+function getTeamClients() {
+  // Clients with a blank Team cell in "Client Master" are shared and show
+  // up for every team; otherwise the client's Team must match the
+  // verified employee's Team (case-insensitive).
+  var team = matchedEmployee ? matchedEmployee.team.trim().toLowerCase() : "";
+  return clientsList.filter(function(c) {
+    return !c.team || c.team.trim().toLowerCase() === team;
+  });
+}
+
+function buildClientOptionsHtml(selectedValue) {
+  var teamClients = getTeamClients();
+  if (teamClients.length === 0) {
+    return '<option value="">No clients available for your team &mdash; contact admin</option>';
+  }
+  var html = '<option value="">Select client&hellip;</option>';
+  teamClients.forEach(function(c) {
+    var sel = (c.handle === selectedValue) ? " selected" : "";
+    html += '<option value="' + escapeHtml(c.handle) + '"' + sel + '>' + escapeHtml(c.handle) + '</option>';
+  });
+  return html;
+}
+
+function refreshClientSelectOptions() {
+  document.querySelectorAll(".client-handle").forEach(function(sel) {
+    var current = sel.value;
+    sel.innerHTML = buildClientOptionsHtml(current);
+  });
 }
 
 function addClientRow() {
@@ -623,7 +908,7 @@ function addClientRow() {
       '<button type="button" class="remove-client-btn" onclick="removeClientRow(' + rowId + ')">Remove</button>' +
     '</div>' +
     '<label>Client Handle</label>' +
-    '<input type="text" class="client-handle" placeholder="Client handle">' +
+    '<select class="client-handle">' + buildClientOptionsHtml() + '</select>' +
     '<label>Level(s)</label>' +
     '<div class="level-checks">' + checksHtml + '</div>' +
     '<div class="level-files-container"></div>';
@@ -681,28 +966,23 @@ function toggleLevelInput(checkbox) {
 }
 
 /****************************************************
- * SUBMIT PORTFOLIO
+ * VALIDATE STEP 2 (Client Details)
  ****************************************************/
-function submitPortfolio() {
+function validateClientRows() {
   var rows = document.querySelectorAll("#clientRows .client-row");
-  var msgBox = document.getElementById("submitMsg");
-  var btn = document.getElementById("submitBtn");
-  msgBox.innerHTML = "";
-
   var entries = [];
+
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
     var clientHandle = row.querySelector(".client-handle").value.trim();
 
     if (!clientHandle) {
-      msgBox.innerHTML = '<div class="msg error">Please enter a Client Handle for Client ' + (i + 1) + '.</div>';
-      return;
+      return { valid: false, message: "Please select a Client Handle for Client " + (i + 1) + "." };
     }
 
     var levelBlocks = row.querySelectorAll(".level-files-block");
     if (levelBlocks.length === 0) {
-      msgBox.innerHTML = '<div class="msg error">Please select at least one Level for Client ' + (i + 1) + '.</div>';
-      return;
+      return { valid: false, message: "Please select at least one Level for Client " + (i + 1) + "." };
     }
 
     var levels = {};
@@ -716,18 +996,50 @@ function submitPortfolio() {
     });
 
     if (invalid) {
-      msgBox.innerHTML = '<div class="msg error">Please enter a valid Files/Day number for every selected level on Client ' + (i + 1) + '.</div>';
-      return;
+      return { valid: false, message: "Please enter a valid Files/Day number for every selected level on Client " + (i + 1) + "." };
     }
 
     entries.push({ clientHandle: clientHandle, levels: levels });
   }
 
+  return { valid: true, entries: entries };
+}
+
+function validateAndGoToStep3() {
+  var msgBox = document.getElementById("step2Msg");
+  msgBox.innerHTML = "";
+
+  var result = validateClientRows();
+  if (!result.valid) {
+    msgBox.innerHTML = '<div class="msg error">' + result.message + '</div>';
+    return;
+  }
+  goToStep(3);
+}
+
+/****************************************************
+ * SUBMIT PORTFOLIO
+ ****************************************************/
+function submitPortfolio() {
+  var msgBox = document.getElementById("submitMsg");
+  var btn = document.getElementById("submitBtn");
+  msgBox.innerHTML = "";
+
+  var result = validateClientRows();
+  if (!result.valid) {
+    // Safety net - step 2 should already have validated this
+    goToStep(2);
+    document.getElementById("step2Msg").innerHTML = '<div class="msg error">' + result.message + '</div>';
+    return;
+  }
+
+  var skillTarget = document.getElementById("skillTarget").value.trim();
+
   var payload = {
-    employeeId: matchedEmployee.id,
     employeeName: matchedEmployee.name,
     team: matchedEmployee.team,
-    entries: entries
+    skillTarget: skillTarget,
+    entries: result.entries
   };
 
   btn.disabled = true;
@@ -743,17 +1055,19 @@ function submitPortfolio() {
     .then(function(res) { return res.json(); })
     .then(function(json) {
       btn.disabled = false;
-      btn.textContent = "Submit";
+      btn.textContent = "Submit Portfolio";
       if (json.status === "success") {
         msgBox.innerHTML = '<div class="msg success">Thank you! Your portfolio has been submitted.</div>';
+        document.getElementById("skillTarget").value = "";
         resetClientRows();
+        goToStep(1);
       } else {
         msgBox.innerHTML = '<div class="msg error">' + (json.message || "Submission failed.") + '</div>';
       }
     })
     .catch(function(err) {
       btn.disabled = false;
-      btn.textContent = "Submit";
+      btn.textContent = "Submit Portfolio";
       msgBox.innerHTML = '<div class="msg error">Network error. Please try again.</div>';
       console.error(err);
     });
@@ -818,6 +1132,7 @@ function loadAdminExtras() {
       renderAdminCards();
       renderFillStatus();
       renderActivityLog();
+      showAdminTab("submissions");
 
       document.getElementById("adminLoading").style.display = "none";
       document.getElementById("adminContent").style.display = "block";
@@ -827,6 +1142,15 @@ function loadAdminExtras() {
         '<div class="msg error">Failed to load data. Please check the API_URL or try again.</div>';
       console.error(err);
     });
+}
+
+function showAdminTab(tabName) {
+  document.querySelectorAll(".tab-btn").forEach(function(btn) {
+    btn.classList.toggle("active", btn.getAttribute("data-tab") === tabName);
+  });
+  document.querySelectorAll(".tab-panel").forEach(function(panel) {
+    panel.classList.toggle("active", panel.getAttribute("data-tabpanel") === tabName);
+  });
 }
 
 function buildFilters() {
@@ -873,13 +1197,13 @@ function groupSubmissions(rows) {
       map[r.submissionId] = {
         submissionId: r.submissionId,
         timestamp: r.timestamp,
-        employeeId: r.employeeId,
         employeeName: r.employeeName,
         team: r.team,
         month: r.month,
         status: r.status,
         approvedBy: r.approvedBy,
         approvedAt: r.approvedAt,
+        skillTarget: r.skillTarget || "",
         clients: []
       };
       order.push(r.submissionId);
@@ -896,10 +1220,10 @@ function groupSubmissions(rows) {
 
 function buildSubmissionCard(g, showActions) {
   var card = document.createElement("div");
-  card.className = "submission-card";
 
   var statusClass = g.status === "Approved" ? "status-approved" :
     (g.status === "Rejected" ? "status-rejected" : "status-pending");
+  card.className = "submission-card " + statusClass;
 
   var clientsHtml = g.clients.map(function(c) {
     var levelParts = Object.keys(c.levels).map(function(l) {
@@ -912,6 +1236,10 @@ function buildSubmissionCard(g, showActions) {
   var approvedByHtml = (g.status !== "Pending" && g.approvedBy)
     ? '<div class="card-approved-by">' + escapeHtml(g.status) + ' by ' + escapeHtml(g.approvedBy) +
       (g.approvedAt ? ' &middot; ' + escapeHtml(g.approvedAt) : '') + '</div>'
+    : '';
+
+  var skillHtml = g.skillTarget
+    ? '<div class="card-skill-target"><strong>Skill goal:</strong> ' + escapeHtml(g.skillTarget) + '</div>'
     : '';
 
   var actionsHtml = "";
@@ -933,6 +1261,7 @@ function buildSubmissionCard(g, showActions) {
     '</div>' +
     approvedByHtml +
     '<div class="card-clients">' + clientsHtml + '</div>' +
+    skillHtml +
     actionsHtml;
 
   return card;
@@ -972,16 +1301,15 @@ function renderFillStatus() {
   var tbody = document.getElementById("fillStatusTbody");
   tbody.innerHTML = "";
 
-  var filledIds = {};
+  var filledNames = {};
   adminResponses.forEach(function(r) {
-    if (r.month === currentMonthLabel) filledIds[r.employeeId] = true;
+    if (r.month === currentMonthLabel) filledNames[r.employeeName] = true;
   });
 
   adminEmployees.forEach(function(emp) {
-    var isFilled = !!filledIds[emp.id];
+    var isFilled = !!filledNames[emp.name];
     var tr = document.createElement("tr");
     tr.innerHTML =
-      "<td>" + escapeHtml(emp.id) + "</td>" +
       "<td>" + escapeHtml(emp.name) + "</td>" +
       "<td>" + escapeHtml(emp.team) + "</td>" +
       "<td><span class='badge " + (isFilled ? "filled" : "not-filled") + "'>" +
@@ -1008,12 +1336,34 @@ function renderActivityLog() {
  * TEAM LEAD PORTAL
  ****************************************************/
 function initTLView() {
-  document.getElementById("tlVerifyBox").style.display = "block";
+  document.getElementById("tlPinBox").style.display = "block";
+  document.getElementById("tlVerifyBox").style.display = "none";
   document.getElementById("tlPanel").style.display = "none";
+  document.getElementById("tlPinInput").value = "";
+  document.getElementById("tlPinMsg").innerHTML = "";
   document.getElementById("tlInput").value = "";
   document.getElementById("tlVerifyMsg").innerHTML = "";
+  tlPinValue = "";
   matchedTL = null;
   if (employeesList.length === 0) fetchEmployees();
+}
+
+function checkTLPin(btn) {
+  var entered = document.getElementById("tlPinInput").value.trim();
+  var msgBox = document.getElementById("tlPinMsg");
+
+  if (!entered) {
+    msgBox.innerHTML = '<div class="msg error">Please enter the PIN.</div>';
+    return;
+  }
+
+  // The PIN is stored here and sent with the team-data request once the
+  // TL is identified - it's verified on the backend (Code.gs), so an
+  // incorrect PIN never returns any submission data.
+  tlPinValue = entered;
+  msgBox.innerHTML = "";
+  document.getElementById("tlPinBox").style.display = "none";
+  document.getElementById("tlVerifyBox").style.display = "block";
 }
 
 function verifyTL() {
@@ -1022,7 +1372,7 @@ function verifyTL() {
   msgBox.innerHTML = "";
 
   if (!raw) {
-    msgBox.innerHTML = '<div class="msg error">Please enter your Employee ID or Name.</div>';
+    msgBox.innerHTML = '<div class="msg error">Please enter your Employee Name.</div>';
     return;
   }
   if (employeesList.length === 0) {
@@ -1031,7 +1381,7 @@ function verifyTL() {
   }
 
   var match = employeesList.find(function(emp) {
-    return (emp.id.toLowerCase() === raw || emp.name.toLowerCase() === raw) &&
+    return emp.name.toLowerCase() === raw &&
       emp.role && emp.role.toLowerCase() === "team lead";
   });
 
@@ -1050,14 +1400,23 @@ function verifyTL() {
 
 function loadTLSubmissions() {
   document.getElementById("tlLoading").style.display = "block";
+  document.getElementById("tlLoading").innerHTML = "Loading submissions&hellip;";
   document.getElementById("tlCards").innerHTML = "";
 
-  fetch(API_URL + "?action=getTeamResponses&team=" + encodeURIComponent(matchedTL.team) +
-      "&tlId=" + encodeURIComponent(matchedTL.id) + "&tlName=" + encodeURIComponent(matchedTL.name))
+  fetch(API_URL + "?action=getTeamResponses&pin=" + encodeURIComponent(tlPinValue) +
+      "&team=" + encodeURIComponent(matchedTL.team) +
+      "&tlName=" + encodeURIComponent(matchedTL.name))
     .then(function(r) { return r.json(); })
     .then(function(json) {
+      if (json.status !== "success") {
+        // Most likely an incorrect PIN - send the TL back to the PIN gate.
+        document.getElementById("tlPanel").style.display = "none";
+        initTLView();
+        document.getElementById("tlPinMsg").innerHTML =
+          '<div class="msg error">' + (json.message || "Incorrect PIN.") + '</div>';
+        return;
+      }
       document.getElementById("tlLoading").style.display = "none";
-      if (json.status !== "success") throw new Error(json.message || "Failed to load");
       tlResponses = json.data;
       renderTLCards();
     })
@@ -1089,7 +1448,6 @@ function approveSubmission(submissionId, status) {
     submissionId: submissionId,
     status: status,
     team: matchedTL.team,
-    tlId: matchedTL.id,
     tlName: matchedTL.name
   };
 
