@@ -17,6 +17,8 @@
     --good-bg: #e5f5ec;
     --bad: #b5342a;
     --bad-bg: #fbe9e7;
+    --pending: #8a5a00;
+    --pending-bg: #fff4e0;
     --radius: 10px;
   }
 
@@ -31,7 +33,7 @@
   }
 
   .shell {
-    max-width: 900px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 24px 18px 60px;
   }
@@ -40,6 +42,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
     padding: 6px 0 22px;
     border-bottom: 1px solid var(--line);
     margin-bottom: 26px;
@@ -50,69 +54,46 @@
     font-weight: 600;
     letter-spacing: -0.01em;
   }
-
   header.top .brand span { color: var(--accent); }
 
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
   .back-link {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--ink-soft);
     cursor: pointer;
     border: none;
     background: none;
-    padding: 6px 10px;
+    padding: 8px 10px;
     border-radius: 6px;
   }
   .back-link:hover { background: var(--line); color: var(--ink); }
 
+  .nav-btn {
+    padding: 8px 14px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .nav-btn-primary:hover { background: var(--accent-dark); color: #fff; }
+
   .view { display: none; }
   .view.active { display: block; }
-
-  /* ---------- Landing ---------- */
-  #view-landing {
-    display: none;
-    min-height: 60vh;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  #view-landing.active { display: flex; }
-
-  .landing-inner h1 {
-    font-size: 26px;
-    margin: 0 0 8px;
-    font-weight: 650;
-  }
-  .landing-inner p {
-    color: var(--ink-soft);
-    margin: 0 0 32px;
-    font-size: 15px;
-  }
-  .landing-buttons {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  .choice-btn {
-    width: 220px;
-    padding: 22px 18px;
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    background: var(--card);
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink);
-    transition: border-color .15s ease, transform .1s ease;
-  }
-  .choice-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .choice-btn .sub {
-    display: block;
-    font-weight: 400;
-    font-size: 12.5px;
-    color: var(--ink-soft);
-    margin-top: 6px;
-  }
 
   /* ---------- Shared card / form styling ---------- */
   .card {
@@ -123,59 +104,8 @@
     max-width: 480px;
     margin: 0 auto;
   }
-  .card h2 {
-    font-size: 18px;
-    margin: 0 0 4px;
-  }
-  .card .hint {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin: 0 0 20px;
-  }
-
-  .client-row {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 14px 14px 6px;
-    margin-bottom: 12px;
-    background: var(--paper);
-  }
-  .client-row-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 2px;
-  }
-  .client-row-label {
-    font-size: 13px;
-    font-weight: 650;
-    color: var(--ink);
-  }
-  .remove-client-btn {
-    border: none;
-    background: none;
-    color: var(--bad);
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 4px 6px;
-  }
-  .remove-client-btn:hover { text-decoration: underline; }
-
-  .add-client-btn {
-    display: block;
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px dashed var(--accent);
-    border-radius: 7px;
-    background: none;
-    color: var(--accent);
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    margin: 4px 0 6px;
-  }
-  .add-client-btn:hover { background: #eaf1fb; }
+  .card h2 { font-size: 18px; margin: 0 0 4px; }
+  .card .hint { font-size: 13px; color: var(--ink-soft); margin: 0 0 20px; }
 
   label {
     display: block;
@@ -186,7 +116,7 @@
   }
   label:first-of-type { margin-top: 0; }
 
-  input[type="text"], select {
+  input[type="text"], input[type="password"], select {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--line);
@@ -196,10 +126,7 @@
     background: #fff;
     font-family: inherit;
   }
-  input[readonly] {
-    background: var(--paper);
-    color: var(--ink-soft);
-  }
+  input[readonly] { background: var(--paper); color: var(--ink-soft); }
   input:focus, select:focus {
     outline: 2px solid var(--accent);
     outline-offset: 1px;
@@ -230,7 +157,6 @@
   }
   .msg.error { background: var(--bad-bg); color: var(--bad); }
   .msg.success { background: var(--good-bg); color: var(--good); }
-  .msg.closed { background: #fff4e0; color: #8a5a00; }
 
   .center-note {
     text-align: center;
@@ -239,23 +165,79 @@
     padding: 30px 10px;
   }
 
-  /* ---------- Admin ---------- */
-  .admin-pin-box { max-width: 340px; margin: 40px auto; }
-
-  .filters {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 18px;
+  /* ---------- Client rows (employee form) ---------- */
+  .client-row {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    margin-bottom: 12px;
+    background: var(--paper);
   }
+  .client-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+  .client-row-label { font-size: 13px; font-weight: 650; color: var(--ink); }
+  .remove-client-btn {
+    border: none;
+    background: none;
+    color: var(--bad);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+  .remove-client-btn:hover { text-decoration: underline; }
+
+  .add-client-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px dashed var(--accent);
+    border-radius: 7px;
+    background: none;
+    color: var(--accent);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 4px 0 6px;
+  }
+  .add-client-btn:hover { background: #eaf1fb; }
+
+  .level-checks {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .level-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .level-check input[type="checkbox"] { width: 16px; height: 16px; }
+
+  .level-files-block {
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    background: #fff;
+  }
+  .level-files-block label { margin: 0 0 6px; font-size: 12.5px; }
+
+  /* ---------- Filters / tables (shared by admin) ---------- */
+  .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
   .filters .field { flex: 1; min-width: 140px; }
   .filters label { margin: 0 0 6px; }
 
-  .count-line {
-    font-size: 13.5px;
-    color: var(--ink-soft);
-    margin-bottom: 10px;
-  }
+  .count-line { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 14px; }
 
   .table-wrap {
     overflow-x: auto;
@@ -273,11 +255,7 @@
   th { color: var(--ink-soft); font-weight: 600; background: var(--paper); }
   tr:last-child td { border-bottom: none; }
 
-  .section-title {
-    font-size: 15px;
-    font-weight: 650;
-    margin: 34px 0 12px;
-  }
+  .section-title { font-size: 15px; font-weight: 650; margin: 34px 0 12px; }
 
   .badge {
     display: inline-block;
@@ -289,10 +267,66 @@
   .badge.filled { background: var(--good-bg); color: var(--good); }
   .badge.not-filled { background: var(--bad-bg); color: var(--bad); }
 
-  .tabs-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+  /* ---------- Submission cards (Admin + TL) ---------- */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .submission-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .card-name { font-size: 14.5px; font-weight: 650; }
+  .card-team { font-weight: 400; color: var(--ink-soft); font-size: 12.5px; }
+  .card-meta { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+  .status-badge.status-pending { background: var(--pending-bg); color: var(--pending); }
+  .status-badge.status-approved { background: var(--good-bg); color: var(--good); }
+  .status-badge.status-rejected { background: var(--bad-bg); color: var(--bad); }
+
+  .card-approved-by { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
+
+  .card-clients { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .client-chip { background: var(--paper); border-radius: 7px; padding: 8px 10px; }
+  .client-chip-name { font-size: 13px; font-weight: 600; }
+  .client-chip-levels { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+
+  .card-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .card-action-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fff;
+  }
+  .approve-btn { color: var(--good); border-color: var(--good); }
+  .approve-btn:hover { background: var(--good-bg); }
+  .reject-btn { color: var(--bad); border-color: var(--bad); }
+  .reject-btn:hover { background: var(--bad-bg); }
+
+  .tl-header { margin-bottom: 14px; font-size: 14px; color: var(--ink-soft); }
 
   @media (max-width: 520px) {
-    .landing-buttons { flex-direction: column; align-items: center; }
     th, td { padding: 8px; }
   }
 </style>
@@ -302,29 +336,15 @@
 <div class="shell">
   <header class="top">
     <div class="brand">Portfolio <span>Tracker</span></div>
-    <button class="back-link" id="btnBack" style="display:none;" onclick="goHome()">&larr; Back</button>
+    <div class="header-actions">
+      <button class="back-link" id="btnBack" style="display:none;" onclick="goToForm()">&larr; Back to Form</button>
+      <button class="nav-btn" onclick="showView('tl')">Team Lead Portal</button>
+      <button class="nav-btn nav-btn-primary" onclick="showView('admin')">Workspace Admin</button>
+    </div>
   </header>
 
-  <!-- ============ VIEW 1: LANDING ============ -->
-  <div class="view active" id="view-landing">
-    <div class="landing-inner">
-      <h1>Monthly Portfolio Submission</h1>
-      <p>Fill your portfolio for the month, or view the admin dashboard.</p>
-      <div class="landing-buttons">
-        <button class="choice-btn" onclick="showView('employee')">
-          Fill Portfolio
-          <span class="sub">Employees submit here</span>
-        </button>
-        <button class="choice-btn" onclick="showView('admin')">
-          Admin Dashboard
-          <span class="sub">PIN protected</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ VIEW 2: EMPLOYEE FORM ============ -->
-  <div class="view" id="view-employee">
+  <!-- ============ VIEW: EMPLOYEE FORM (default) ============ -->
+  <div class="view active" id="view-employee">
 
     <!-- Form closed message (shown instead of everything if day > 5) -->
     <div class="card" id="formClosedBox" style="display:none;">
@@ -340,7 +360,7 @@
       <p class="hint">Enter your Employee ID or Name.</p>
       <label for="verifyInput">Employee ID or Name</label>
       <input type="text" id="verifyInput" placeholder="e.g. EMP1024 or Priya Sharma">
-      <button class="btn" id="verifyBtn" onclick="verifyEmployee()">Verify</button>
+      <button class="btn" onclick="verifyEmployee()">Verify</button>
       <div id="verifyMsg"></div>
     </div>
 
@@ -367,51 +387,48 @@
     </div>
   </div>
 
-  <!-- ============ VIEW 3: ADMIN DASHBOARD ============ -->
+  <!-- ============ VIEW: WORKSPACE ADMIN ============ -->
   <div class="view" id="view-admin">
 
     <div class="card admin-pin-box" id="pinBox">
-      <h2>Admin Access</h2>
+      <h2>Workspace Admin</h2>
       <p class="hint">Enter PIN to continue.</p>
       <label for="pinInput">PIN</label>
-      <input type="text" id="pinInput" placeholder="Enter PIN">
-      <button class="btn" onclick="checkPin()">Enter</button>
+      <input type="password" id="pinInput" placeholder="Enter PIN">
+      <button class="btn" onclick="checkPin(this)">Enter</button>
       <div id="pinMsg"></div>
     </div>
 
     <div id="adminPanel" style="display:none;">
-
       <div id="adminLoading" class="center-note">Loading data&hellip;</div>
 
       <div id="adminContent" style="display:none;">
         <div class="filters">
           <div class="field">
             <label for="filterMonth">Month</label>
-            <select id="filterMonth" onchange="renderTable()"></select>
+            <select id="filterMonth" onchange="renderAdminCards()"></select>
           </div>
           <div class="field">
             <label for="filterTeam">Team</label>
-            <select id="filterTeam" onchange="renderTable()"></select>
+            <select id="filterTeam" onchange="renderAdminCards()"></select>
           </div>
           <div class="field">
             <label for="filterEmployee">Employee Name</label>
-            <select id="filterEmployee" onchange="renderTable()"></select>
+            <select id="filterEmployee" onchange="renderAdminCards()"></select>
+          </div>
+          <div class="field">
+            <label for="filterStatus">Status</label>
+            <select id="filterStatus" onchange="renderAdminCards()">
+              <option value="All">All</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
           </div>
         </div>
 
-        <div class="count-line" id="countLine">0 entries found</div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Employee Name</th><th>Team</th><th>Client Handle</th>
-                <th>Level</th><th>Month</th><th>Files/Day</th><th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody id="responsesTbody"></tbody>
-          </table>
-        </div>
+        <div class="count-line" id="countLine">0 submissions found</div>
+        <div class="cards-grid" id="submissionCards"></div>
 
         <div class="section-title">Fill Status &mdash; Current Month</div>
         <div class="table-wrap">
@@ -422,7 +439,37 @@
             <tbody id="fillStatusTbody"></tbody>
           </table>
         </div>
+
+        <div class="section-title">Activity Log</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Timestamp</th><th>Event</th><th>Actor</th><th>Details</th></tr>
+            </thead>
+            <tbody id="activityLogTbody"></tbody>
+          </table>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ============ VIEW: TEAM LEAD PORTAL ============ -->
+  <div class="view" id="view-tl">
+
+    <div class="card admin-pin-box" id="tlVerifyBox">
+      <h2>Team Lead Portal</h2>
+      <p class="hint">Enter your Employee ID or Name to verify.</p>
+      <label for="tlInput">Employee ID or Name</label>
+      <input type="text" id="tlInput" placeholder="e.g. EMP1024 or Priya Sharma">
+      <button class="btn" onclick="verifyTL()">Verify</button>
+      <div id="tlVerifyMsg"></div>
+    </div>
+
+    <div id="tlPanel" style="display:none;">
+      <div class="tl-header">Team: <strong id="tlTeamLabel"></strong></div>
+      <div id="tlActionMsg"></div>
+      <div id="tlLoading" class="center-note">Loading submissions&hellip;</div>
+      <div class="cards-grid" id="tlCards"></div>
     </div>
   </div>
 
@@ -435,16 +482,26 @@
 // PASTE YOUR APPS SCRIPT WEB APP /exec URL HERE
 var API_URL = "https://script.google.com/macros/s/AKfycbwqhHQkH7Nha2AKeTRIHzvGfGIAqxK4edGa7FYCcXwM3wA5sD4O44l8jRQHVLnZ1hNG/exec";
 
-// CHANGE THIS PIN
-var ADMIN_PIN = "4567";
+// Admin PIN is checked on the backend (Code.gs), NOT here - so it never
+// appears in the page source. Change it in Code.gs, not in this file.
+
+// CHANGE LEVEL OPTIONS HERE if needed (must match Code.gs LEVEL_OPTIONS
+// and the Drafting/Self Finalize/QC columns in Portfolio Responses)
+var LEVEL_OPTIONS = ["Drafting", "Self Finalize", "QC"];
 
 /****************************************************
  * STATE
  ****************************************************/
 var employeesList = [];
 var matchedEmployee = null;
+var matchedTL = null;
+
 var adminResponses = [];
 var adminEmployees = [];
+var adminActivityLog = [];
+var currentAdminPin = "";
+
+var tlResponses = [];
 
 var MONTH_NAMES = ["January","February","March","April","May","June",
   "July","August","September","October","November","December"];
@@ -454,25 +511,16 @@ var currentMonthLabel = MONTH_NAMES[new Date().getMonth()] + " " + new Date().ge
  * VIEW SWITCHING
  ****************************************************/
 function showView(name) {
-  document.getElementById("view-landing").classList.remove("active");
   document.getElementById("view-employee").classList.remove("active");
   document.getElementById("view-admin").classList.remove("active");
-  document.getElementById("btnBack").style.display = "inline-block";
+  document.getElementById("view-tl").classList.remove("active");
+  document.getElementById("btnBack").style.display = (name === "employee") ? "none" : "inline-block";
+  document.getElementById("view-" + name).classList.add("active");
 
-  if (name === "employee") {
-    document.getElementById("view-employee").classList.add("active");
-    initEmployeeView();
-  } else if (name === "admin") {
-    document.getElementById("view-admin").classList.add("active");
-  }
+  if (name === "tl") initTLView();
 }
 
-function goHome() {
-  document.getElementById("view-landing").classList.add("active");
-  document.getElementById("view-employee").classList.remove("active");
-  document.getElementById("view-admin").classList.remove("active");
-  document.getElementById("btnBack").style.display = "none";
-}
+function goToForm() { showView("employee"); }
 
 /****************************************************
  * EMPLOYEE VIEW
@@ -494,18 +542,14 @@ function initEmployeeView() {
   document.getElementById("formClosedBox").style.display = "none";
   document.getElementById("verifyBox").style.display = "block";
 
-  if (employeesList.length === 0) {
-    fetchEmployees();
-  }
+  if (employeesList.length === 0) fetchEmployees();
 }
 
 function fetchEmployees() {
   fetch(API_URL + "?action=getEmployees")
     .then(function(res) { return res.json(); })
     .then(function(json) {
-      if (json.status === "success") {
-        employeesList = json.data;
-      }
+      if (json.status === "success") employeesList = json.data;
     })
     .catch(function(err) {
       console.error("Failed to load employees", err);
@@ -521,7 +565,6 @@ function verifyEmployee() {
     msgBox.innerHTML = '<div class="msg error">Please enter your Employee ID or Name.</div>';
     return;
   }
-
   if (employeesList.length === 0) {
     msgBox.innerHTML = '<div class="msg error">Employee list failed to load. Please reload the page.</div>';
     return;
@@ -550,7 +593,7 @@ function verifyEmployee() {
  * DYNAMIC CLIENT ROWS (up to MAX_CLIENTS per submission)
  ****************************************************/
 var clientRowCount = 0;
-var MAX_CLIENTS = 10;
+var MAX_CLIENTS = 25;
 
 function resetClientRows() {
   document.getElementById("clientRows").innerHTML = "";
@@ -566,6 +609,11 @@ function addClientRow() {
   clientRowCount++;
   var rowId = clientRowCount;
 
+  var checksHtml = LEVEL_OPTIONS.map(function(level) {
+    return '<label class="level-check"><input type="checkbox" class="level-cb" value="' +
+      level + '" onchange="toggleLevelInput(this)"> ' + level + '</label>';
+  }).join("");
+
   var div = document.createElement("div");
   div.className = "client-row";
   div.setAttribute("data-row", rowId);
@@ -576,16 +624,9 @@ function addClientRow() {
     '</div>' +
     '<label>Client Handle</label>' +
     '<input type="text" class="client-handle" placeholder="Client handle">' +
-    '<label>Level</label>' +
-    '<select class="client-level">' +
-      '<option value="">Select level</option>' +
-      // CHANGE LEVEL OPTIONS HERE
-      '<option value="Drafting">Drafting</option>' +
-      '<option value="Self Finalize">Self Finalize</option>' +
-      '<option value="QC">QC</option>' +
-    '</select>' +
-    '<label>Files/Day</label>' +
-    '<input type="text" class="client-files" inputmode="numeric" placeholder="e.g. 8">';
+    '<label>Level(s)</label>' +
+    '<div class="level-checks">' + checksHtml + '</div>' +
+    '<div class="level-files-container"></div>';
 
   container.appendChild(div);
   refreshClientRowsUI();
@@ -618,6 +659,30 @@ function refreshClientRowsUI() {
     rows.length >= MAX_CLIENTS ? "none" : "block";
 }
 
+function toggleLevelInput(checkbox) {
+  var row = checkbox.closest(".client-row");
+  var container = row.querySelector(".level-files-container");
+  var level = checkbox.value;
+  var existing = container.querySelector('[data-level="' + level + '"]');
+
+  if (checkbox.checked) {
+    if (!existing) {
+      var block = document.createElement("div");
+      block.className = "level-files-block";
+      block.setAttribute("data-level", level);
+      block.innerHTML =
+        '<label>' + level + ' Files/Day</label>' +
+        '<input type="text" class="level-files-input" inputmode="numeric" placeholder="e.g. 8">';
+      container.appendChild(block);
+    }
+  } else {
+    if (existing) existing.remove();
+  }
+}
+
+/****************************************************
+ * SUBMIT PORTFOLIO
+ ****************************************************/
 function submitPortfolio() {
   var rows = document.querySelectorAll("#clientRows .client-row");
   var msgBox = document.getElementById("submitMsg");
@@ -628,19 +693,34 @@ function submitPortfolio() {
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
     var clientHandle = row.querySelector(".client-handle").value.trim();
-    var level = row.querySelector(".client-level").value;
-    var filesRaw = row.querySelector(".client-files").value.trim();
 
-    if (!clientHandle || !level || !filesRaw) {
-      msgBox.innerHTML = '<div class="msg error">Please fill in all fields (Client Handle, Level, Files/Day) for Client ' + (i + 1) + '.</div>';
+    if (!clientHandle) {
+      msgBox.innerHTML = '<div class="msg error">Please enter a Client Handle for Client ' + (i + 1) + '.</div>';
       return;
     }
-    var filesPerDay = Number(filesRaw);
-    if (isNaN(filesPerDay) || filesPerDay < 0) {
-      msgBox.innerHTML = '<div class="msg error">Files/Day for Client ' + (i + 1) + ' must be a valid number.</div>';
+
+    var levelBlocks = row.querySelectorAll(".level-files-block");
+    if (levelBlocks.length === 0) {
+      msgBox.innerHTML = '<div class="msg error">Please select at least one Level for Client ' + (i + 1) + '.</div>';
       return;
     }
-    entries.push({ clientHandle: clientHandle, level: level, filesPerDay: filesPerDay });
+
+    var levels = {};
+    var invalid = false;
+    levelBlocks.forEach(function(block) {
+      var level = block.getAttribute("data-level");
+      var val = block.querySelector(".level-files-input").value.trim();
+      var num = Number(val);
+      if (!val || isNaN(num) || num < 0) invalid = true;
+      levels[level] = num;
+    });
+
+    if (invalid) {
+      msgBox.innerHTML = '<div class="msg error">Please enter a valid Files/Day number for every selected level on Client ' + (i + 1) + '.</div>';
+      return;
+    }
+
+    entries.push({ clientHandle: clientHandle, levels: levels });
   }
 
   var payload = {
@@ -682,37 +762,63 @@ function submitPortfolio() {
 /****************************************************
  * ADMIN VIEW
  ****************************************************/
-function checkPin() {
+function checkPin(btn) {
   var entered = document.getElementById("pinInput").value.trim();
   var msgBox = document.getElementById("pinMsg");
 
-  if (entered === ADMIN_PIN) {
-    document.getElementById("pinBox").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-    loadAdminData();
-  } else {
-    msgBox.innerHTML = '<div class="msg error">Incorrect PIN.</div>';
+  if (!entered) {
+    msgBox.innerHTML = '<div class="msg error">Please enter the PIN.</div>';
+    return;
   }
+
+  msgBox.innerHTML = "";
+  btn.disabled = true;
+  btn.textContent = "Checking...";
+
+  // PIN is verified on the backend (Code.gs) - this request also fetches
+  // the actual response data, only returned if the PIN is correct.
+  fetch(API_URL + "?action=getResponses&pin=" + encodeURIComponent(entered))
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      btn.disabled = false;
+      btn.textContent = "Enter";
+      if (json.status === "success") {
+        adminResponses = json.data;
+        currentAdminPin = entered;
+        document.getElementById("pinBox").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        loadAdminExtras();
+      } else {
+        msgBox.innerHTML = '<div class="msg error">Incorrect PIN.</div>';
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = "Enter";
+      msgBox.innerHTML = '<div class="msg error">Network error. Please try again.</div>';
+      console.error(err);
+    });
 }
 
-function loadAdminData() {
+function loadAdminExtras() {
   document.getElementById("adminLoading").style.display = "block";
   document.getElementById("adminContent").style.display = "none";
 
   Promise.all([
     fetch(API_URL + "?action=getEmployees").then(function(r) { return r.json(); }),
-    fetch(API_URL + "?action=getResponses").then(function(r) { return r.json(); })
+    fetch(API_URL + "?action=getActivityLog&pin=" + encodeURIComponent(currentAdminPin)).then(function(r) { return r.json(); })
   ])
     .then(function(results) {
-      var empRes = results[0], respRes = results[1];
-      if (empRes.status !== "success" || respRes.status !== "success") {
-        throw new Error("API returned an error");
-      }
+      var empRes = results[0], logRes = results[1];
+      if (empRes.status !== "success") throw new Error("API returned an error");
       adminEmployees = empRes.data;
-      adminResponses = respRes.data;
+      adminActivityLog = (logRes.status === "success") ? logRes.data : [];
+
       buildFilters();
-      renderTable();
+      renderAdminCards();
       renderFillStatus();
+      renderActivityLog();
+
       document.getElementById("adminLoading").style.display = "none";
       document.getElementById("adminContent").style.display = "block";
     })
@@ -754,33 +860,112 @@ function fillSelect(id, values) {
   });
 }
 
-function renderTable() {
+/****************************************************
+ * GROUPING - one card per submission (a submission can
+ * have multiple clients, all sharing the same Submission ID)
+ ****************************************************/
+function groupSubmissions(rows) {
+  var map = {};
+  var order = [];
+
+  rows.forEach(function(r) {
+    if (!map[r.submissionId]) {
+      map[r.submissionId] = {
+        submissionId: r.submissionId,
+        timestamp: r.timestamp,
+        employeeId: r.employeeId,
+        employeeName: r.employeeName,
+        team: r.team,
+        month: r.month,
+        status: r.status,
+        approvedBy: r.approvedBy,
+        approvedAt: r.approvedAt,
+        clients: []
+      };
+      order.push(r.submissionId);
+    }
+    var levels = {};
+    if (r.draftingFiles !== null && r.draftingFiles !== undefined) levels["Drafting"] = r.draftingFiles;
+    if (r.selfFinalizeFiles !== null && r.selfFinalizeFiles !== undefined) levels["Self Finalize"] = r.selfFinalizeFiles;
+    if (r.qcFiles !== null && r.qcFiles !== undefined) levels["QC"] = r.qcFiles;
+    map[r.submissionId].clients.push({ clientHandle: r.clientHandle, levels: levels });
+  });
+
+  return order.map(function(id) { return map[id]; });
+}
+
+function buildSubmissionCard(g, showActions) {
+  var card = document.createElement("div");
+  card.className = "submission-card";
+
+  var statusClass = g.status === "Approved" ? "status-approved" :
+    (g.status === "Rejected" ? "status-rejected" : "status-pending");
+
+  var clientsHtml = g.clients.map(function(c) {
+    var levelParts = Object.keys(c.levels).map(function(l) {
+      return escapeHtml(l) + ": " + escapeHtml(c.levels[l]);
+    }).join(" &middot; ");
+    return '<div class="client-chip"><div class="client-chip-name">' + escapeHtml(c.clientHandle) +
+      '</div><div class="client-chip-levels">' + levelParts + '</div></div>';
+  }).join("");
+
+  var approvedByHtml = (g.status !== "Pending" && g.approvedBy)
+    ? '<div class="card-approved-by">' + escapeHtml(g.status) + ' by ' + escapeHtml(g.approvedBy) +
+      (g.approvedAt ? ' &middot; ' + escapeHtml(g.approvedAt) : '') + '</div>'
+    : '';
+
+  var actionsHtml = "";
+  if (showActions) {
+    actionsHtml =
+      '<div class="card-actions">' +
+        '<button class="card-action-btn approve-btn" onclick="approveSubmission(\'' + g.submissionId + '\', \'Approved\')">Approve</button>' +
+        '<button class="card-action-btn reject-btn" onclick="approveSubmission(\'' + g.submissionId + '\', \'Rejected\')">Reject</button>' +
+      '</div>';
+  }
+
+  card.innerHTML =
+    '<div class="card-top">' +
+      '<div>' +
+        '<div class="card-name">' + escapeHtml(g.employeeName) + ' <span class="card-team">' + escapeHtml(g.team) + '</span></div>' +
+        '<div class="card-meta">' + escapeHtml(g.month) + ' &middot; Submitted ' + escapeHtml(g.timestamp) + '</div>' +
+      '</div>' +
+      '<span class="status-badge ' + statusClass + '">' + escapeHtml(g.status) + '</span>' +
+    '</div>' +
+    approvedByHtml +
+    '<div class="card-clients">' + clientsHtml + '</div>' +
+    actionsHtml;
+
+  return card;
+}
+
+function renderAdminCards() {
   var month = document.getElementById("filterMonth").value;
   var team = document.getElementById("filterTeam").value;
   var name = document.getElementById("filterEmployee").value;
+  var status = document.getElementById("filterStatus").value;
 
-  var filtered = adminResponses.filter(function(r) {
+  var filteredRows = adminResponses.filter(function(r) {
     return (month === "All" || r.month === month) &&
            (team === "All" || r.team === team) &&
            (name === "All" || r.employeeName === name);
   });
 
-  var tbody = document.getElementById("responsesTbody");
-  tbody.innerHTML = "";
-  filtered.forEach(function(r) {
-    var tr = document.createElement("tr");
-    tr.innerHTML =
-      "<td>" + escapeHtml(r.employeeName) + "</td>" +
-      "<td>" + escapeHtml(r.team) + "</td>" +
-      "<td>" + escapeHtml(r.clientHandle) + "</td>" +
-      "<td>" + escapeHtml(r.level) + "</td>" +
-      "<td>" + escapeHtml(r.month) + "</td>" +
-      "<td>" + escapeHtml(r.filesPerDay) + "</td>" +
-      "<td>" + escapeHtml(r.timestamp) + "</td>";
-    tbody.appendChild(tr);
-  });
+  var groups = groupSubmissions(filteredRows);
+  if (status !== "All") {
+    groups = groups.filter(function(g) { return g.status === status; });
+  }
 
-  document.getElementById("countLine").textContent = filtered.length + " entries found";
+  document.getElementById("countLine").textContent = groups.length + " submissions found";
+
+  var container = document.getElementById("submissionCards");
+  container.innerHTML = "";
+  if (groups.length === 0) {
+    container.innerHTML = '<div class="center-note">No submissions match these filters.</div>';
+    return;
+  }
+  groups.forEach(function(g) {
+    container.appendChild(buildSubmissionCard(g, false));
+  });
 }
 
 function renderFillStatus() {
@@ -805,11 +990,143 @@ function renderFillStatus() {
   });
 }
 
+function renderActivityLog() {
+  var tbody = document.getElementById("activityLogTbody");
+  tbody.innerHTML = "";
+  adminActivityLog.forEach(function(a) {
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + escapeHtml(a.timestamp) + "</td>" +
+      "<td>" + escapeHtml(a.event) + "</td>" +
+      "<td>" + escapeHtml(a.actor) + "</td>" +
+      "<td>" + escapeHtml(a.details) + "</td>";
+    tbody.appendChild(tr);
+  });
+}
+
+/****************************************************
+ * TEAM LEAD PORTAL
+ ****************************************************/
+function initTLView() {
+  document.getElementById("tlVerifyBox").style.display = "block";
+  document.getElementById("tlPanel").style.display = "none";
+  document.getElementById("tlInput").value = "";
+  document.getElementById("tlVerifyMsg").innerHTML = "";
+  matchedTL = null;
+  if (employeesList.length === 0) fetchEmployees();
+}
+
+function verifyTL() {
+  var raw = document.getElementById("tlInput").value.trim().toLowerCase();
+  var msgBox = document.getElementById("tlVerifyMsg");
+  msgBox.innerHTML = "";
+
+  if (!raw) {
+    msgBox.innerHTML = '<div class="msg error">Please enter your Employee ID or Name.</div>';
+    return;
+  }
+  if (employeesList.length === 0) {
+    msgBox.innerHTML = '<div class="msg error">Employee list failed to load. Please reload the page.</div>';
+    return;
+  }
+
+  var match = employeesList.find(function(emp) {
+    return (emp.id.toLowerCase() === raw || emp.name.toLowerCase() === raw) &&
+      emp.role && emp.role.toLowerCase() === "team lead";
+  });
+
+  if (!match) {
+    msgBox.innerHTML = '<div class="msg error">You are not authorized as a Team Lead.</div>';
+    return;
+  }
+
+  matchedTL = match;
+  document.getElementById("tlVerifyBox").style.display = "none";
+  document.getElementById("tlPanel").style.display = "block";
+  document.getElementById("tlTeamLabel").textContent = match.team;
+  document.getElementById("tlActionMsg").innerHTML = "";
+  loadTLSubmissions();
+}
+
+function loadTLSubmissions() {
+  document.getElementById("tlLoading").style.display = "block";
+  document.getElementById("tlCards").innerHTML = "";
+
+  fetch(API_URL + "?action=getTeamResponses&team=" + encodeURIComponent(matchedTL.team) +
+      "&tlId=" + encodeURIComponent(matchedTL.id) + "&tlName=" + encodeURIComponent(matchedTL.name))
+    .then(function(r) { return r.json(); })
+    .then(function(json) {
+      document.getElementById("tlLoading").style.display = "none";
+      if (json.status !== "success") throw new Error(json.message || "Failed to load");
+      tlResponses = json.data;
+      renderTLCards();
+    })
+    .catch(function(err) {
+      document.getElementById("tlLoading").innerHTML = '<div class="msg error">Failed to load submissions.</div>';
+      console.error(err);
+    });
+}
+
+function renderTLCards() {
+  var groups = groupSubmissions(tlResponses);
+  var container = document.getElementById("tlCards");
+  container.innerHTML = "";
+  if (groups.length === 0) {
+    container.innerHTML = '<div class="center-note">No submissions from your team yet.</div>';
+    return;
+  }
+  groups.forEach(function(g) {
+    container.appendChild(buildSubmissionCard(g, true));
+  });
+}
+
+function approveSubmission(submissionId, status) {
+  if (!matchedTL) return;
+  var msgBox = document.getElementById("tlActionMsg");
+  msgBox.innerHTML = "";
+
+  var payload = {
+    submissionId: submissionId,
+    status: status,
+    team: matchedTL.team,
+    tlId: matchedTL.id,
+    tlName: matchedTL.name
+  };
+
+  fetch(API_URL + "?action=approveSubmission", {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(json) {
+      if (json.status === "success") {
+        loadTLSubmissions();
+      } else {
+        msgBox.innerHTML = '<div class="msg error">' + (json.message || "Action failed.") + '</div>';
+      }
+    })
+    .catch(function(err) {
+      msgBox.innerHTML = '<div class="msg error">Network error. Please try again.</div>';
+      console.error(err);
+    });
+}
+
+/****************************************************
+ * SHARED HELPER
+ ****************************************************/
 function escapeHtml(str) {
   var div = document.createElement("div");
   div.textContent = str == null ? "" : String(str);
   return div.innerHTML;
 }
+
+/****************************************************
+ * INIT - employee form is the default view
+ ****************************************************/
+document.addEventListener("DOMContentLoaded", function() {
+  initEmployeeView();
+});
 </script>
 </body>
 </html>
