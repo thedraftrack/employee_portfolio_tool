@@ -134,6 +134,7 @@
     border-color: var(--accent);
   }
   select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235b6472'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.1l3.71-3.87a.75.75 0 111.08 1.04l-4.25 4.43a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 32px; }
+  select:disabled { background-color: var(--paper); color: var(--ink-faint); cursor: not-allowed; }
 
   .helper-text { font-size: 12px; color: var(--ink-faint); margin-top: 5px; }
 
@@ -822,41 +823,61 @@ function resetClientRows() {
   addClientRow();
 }
 
-// Groups every client (all teams, including shared/blank-team ones) into
-// <optgroup> blocks by Team, each sorted A-Z, with the Team groups
-// themselves sorted A-Z too. Lets an employee pick a client from any
-// team directly from one dropdown - no separate "helping team" step needed.
-function buildGroupedClientOptionsHtml(selectedValue) {
-  if (clientsList.length === 0) {
-    return '<option value="">No clients available &mdash; contact admin</option>';
-  }
-
+// Clients are grouped by Team under the hood (blank team => "Shared").
+// Instead of one big dropdown with every client, the employee first
+// picks a Team, then a second dropdown shows just that team's clients.
+function getClientTeamGroups() {
   var groups = {};
   clientsList.forEach(function(c) {
     var teamKey = c.team ? c.team.trim() : "Shared";
     if (!groups[teamKey]) groups[teamKey] = [];
     groups[teamKey].push(c.handle);
   });
+  return groups;
+}
 
+function buildClientTeamOptionsHtml(selectedTeam) {
+  var groups = getClientTeamGroups();
   var teamNames = Object.keys(groups).sort(function(a, b) { return a.localeCompare(b); });
-
-  var html = '<option value="">Select client&hellip;</option>';
-  teamNames.forEach(function(team) {
-    var handles = groups[team].slice().sort(function(a, b) { return a.localeCompare(b); });
-    html += '<optgroup label="' + escapeHtml(team) + '">';
-    handles.forEach(function(h) {
-      var sel = (h === selectedValue) ? " selected" : "";
-      html += '<option value="' + escapeHtml(h) + '"' + sel + '>' + escapeHtml(h) + '</option>';
-    });
-    html += '</optgroup>';
+  if (teamNames.length === 0) return '<option value="">No teams available &mdash; contact admin</option>';
+  var html = '<option value="">Select team&hellip;</option>';
+  teamNames.forEach(function(t) {
+    var sel = (t === selectedTeam) ? " selected" : "";
+    html += '<option value="' + escapeHtml(t) + '"' + sel + '>' + escapeHtml(t) + '</option>';
   });
   return html;
 }
 
+function buildClientHandleOptionsHtml(team, selectedValue) {
+  if (!team) return '<option value="">Select team first&hellip;</option>';
+  var groups = getClientTeamGroups();
+  var handles = (groups[team] || []).slice().sort(function(a, b) { return a.localeCompare(b); });
+  if (handles.length === 0) return '<option value="">No clients found for that team</option>';
+  var html = '<option value="">Select client&hellip;</option>';
+  handles.forEach(function(h) {
+    var sel = (h === selectedValue) ? " selected" : "";
+    html += '<option value="' + escapeHtml(h) + '"' + sel + '>' + escapeHtml(h) + '</option>';
+  });
+  return html;
+}
+
+function onClientTeamChange(select) {
+  var row = select.closest(".client-row");
+  var clientSelect = row.querySelector(".client-handle");
+  var team = select.value;
+  clientSelect.innerHTML = buildClientHandleOptionsHtml(team, "");
+  clientSelect.disabled = !team;
+}
+
 function refreshClientSelectOptions() {
-  document.querySelectorAll(".client-handle").forEach(function(sel) {
-    var current = sel.value;
-    sel.innerHTML = buildGroupedClientOptionsHtml(current);
+  document.querySelectorAll(".client-row").forEach(function(row) {
+    var teamSelect = row.querySelector(".client-team-select");
+    var clientSelect = row.querySelector(".client-handle");
+    var currentTeam = teamSelect.value;
+    var currentClient = clientSelect.value;
+    teamSelect.innerHTML = buildClientTeamOptionsHtml(currentTeam);
+    clientSelect.innerHTML = buildClientHandleOptionsHtml(currentTeam, currentClient);
+    clientSelect.disabled = !currentTeam;
   });
 }
 
@@ -879,8 +900,10 @@ function addClientRow() {
       '<span class="client-row-label"></span>' +
       '<button type="button" class="remove-client-btn" onclick="removeClientRow(' + rowId + ')">Remove</button>' +
     '</div>' +
+    '<label>Team</label>' +
+    '<select class="client-team-select" onchange="onClientTeamChange(this)">' + buildClientTeamOptionsHtml("") + '</select>' +
     '<label>Client Handle</label>' +
-    '<select class="client-handle">' + buildGroupedClientOptionsHtml("") + '</select>' +
+    '<select class="client-handle" disabled>' + buildClientHandleOptionsHtml("", "") + '</select>' +
     '<label>Level</label>' +
     '<select class="level-select" onchange="onLevelSelectChange(this)">' + levelOptionsHtml + '</select>' +
     '<div class="helper-text">Selecting QC also asks for Self Finalize Files/Day, since QC work goes through Self Finalize first.</div>' +
@@ -945,6 +968,9 @@ function validateClientRows() {
 
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
+    var team = row.querySelector(".client-team-select").value.trim();
+    if (!team) return { valid: false, message: "Please select a Team for Client " + (i + 1) + "." };
+
     var clientHandle = row.querySelector(".client-handle").value.trim();
     if (!clientHandle) return { valid: false, message: "Please select a Client Handle for Client " + (i + 1) + "." };
 
