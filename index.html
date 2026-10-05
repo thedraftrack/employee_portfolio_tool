@@ -218,13 +218,6 @@
   }
   .add-client-btn:hover { background: var(--accent-soft-bg); }
 
-  .level-checks { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
-  .level-check {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 13.5px; font-weight: 500; color: var(--ink); cursor: pointer;
-  }
-  .level-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); }
-
   .level-files-block {
     border: 1px solid var(--line); border-radius: 7px;
     padding: 10px 12px; margin-top: 10px; background: #fff;
@@ -481,7 +474,7 @@
       <!-- STEP 2: Client Details -->
       <div class="step-pane" data-pane="2" style="display:none;">
         <h2>Client Details</h2>
-        <p class="hint">Pick a client from any team below (grouped by team, A&ndash;Z), choose one or more levels, and enter Files/Day for each.</p>
+        <p class="hint">Pick a client from any team below (grouped by team, A&ndash;Z), choose a Level, and enter Files/Day.</p>
 
         <div id="clientRows"></div>
         <button type="button" class="add-client-btn" id="addClientBtn" onclick="addClientRow()">+ Add another client</button>
@@ -875,10 +868,8 @@ function addClientRow() {
   clientRowCount++;
   var rowId = clientRowCount;
 
-  var checksHtml = LEVEL_OPTIONS.map(function(level) {
-    return '<label class="level-check"><input type="checkbox" class="level-cb" value="' +
-      level + '" onchange="toggleLevelInput(this)"> ' + level + '</label>';
-  }).join("");
+  var levelOptionsHtml = '<option value="">Select level&hellip;</option>' +
+    LEVEL_OPTIONS.map(function(level) { return '<option value="' + level + '">' + level + '</option>'; }).join("");
 
   var div = document.createElement("div");
   div.className = "client-row";
@@ -890,8 +881,9 @@ function addClientRow() {
     '</div>' +
     '<label>Client Handle</label>' +
     '<select class="client-handle">' + buildGroupedClientOptionsHtml("") + '</select>' +
-    '<label>Level(s)</label>' +
-    '<div class="level-checks">' + checksHtml + '</div>' +
+    '<label>Level</label>' +
+    '<select class="level-select" onchange="onLevelSelectChange(this)">' + levelOptionsHtml + '</select>' +
+    '<div class="helper-text">Selecting QC also asks for Self Finalize Files/Day, since QC work goes through Self Finalize first.</div>' +
     '<div class="level-files-container"></div>';
 
   container.appendChild(div);
@@ -914,24 +906,34 @@ function refreshClientRowsUI() {
   document.getElementById("addClientBtn").style.display = rows.length >= MAX_CLIENTS ? "none" : "block";
 }
 
-function toggleLevelInput(checkbox) {
-  var row = checkbox.closest(".client-row");
+// Level is now a single dropdown (not multi-select checkboxes). Picking
+// Drafting or Self Finalize shows just that one Files/Day field. Picking
+// QC shows TWO fields - Self Finalize Files/Day AND QC Files/Day -
+// because QC work always passes through Self Finalize first.
+function onLevelSelectChange(select) {
+  var row = select.closest(".client-row");
   var container = row.querySelector(".level-files-container");
-  var level = checkbox.value;
-  var existing = container.querySelector('[data-level="' + level + '"]');
+  var previousValues = {};
+  container.querySelectorAll(".level-files-block").forEach(function(block) {
+    previousValues[block.getAttribute("data-level")] = block.querySelector(".level-files-input").value;
+  });
+  container.innerHTML = "";
 
-  if (checkbox.checked) {
-    if (!existing) {
-      var block = document.createElement("div");
-      block.className = "level-files-block";
-      block.setAttribute("data-level", level);
-      block.innerHTML = '<label>' + level + ' Files/Day</label>' +
-        '<input type="text" class="level-files-input" inputmode="numeric" placeholder="e.g. 8">';
-      container.appendChild(block);
-    }
-  } else if (existing) {
-    existing.remove();
-  }
+  var level = select.value;
+  if (!level) return;
+
+  var levelsToShow = (level === "QC") ? ["Self Finalize", "QC"] : [level];
+
+  levelsToShow.forEach(function(lvl) {
+    var block = document.createElement("div");
+    block.className = "level-files-block";
+    block.setAttribute("data-level", lvl);
+    block.innerHTML = '<label>' + lvl + ' Files/Day</label>' +
+      '<input type="text" class="level-files-input" inputmode="numeric" placeholder="e.g. 8">';
+    container.appendChild(block);
+    // Keep whatever the user already typed if they switch back and forth
+    if (previousValues[lvl]) block.querySelector(".level-files-input").value = previousValues[lvl];
+  });
 }
 
 /****************************************************
@@ -947,7 +949,7 @@ function validateClientRows() {
     if (!clientHandle) return { valid: false, message: "Please select a Client Handle for Client " + (i + 1) + "." };
 
     var levelBlocks = row.querySelectorAll(".level-files-block");
-    if (levelBlocks.length === 0) return { valid: false, message: "Please select at least one Level for Client " + (i + 1) + "." };
+    if (levelBlocks.length === 0) return { valid: false, message: "Please select a Level for Client " + (i + 1) + "." };
 
     var levels = {};
     var invalid = false;
