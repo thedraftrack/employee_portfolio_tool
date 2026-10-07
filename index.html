@@ -266,6 +266,23 @@
   }
   .combo-client-item:hover { background: var(--accent-soft-bg); color: var(--accent-dark); }
 
+  /* Second-level nested group (e.g. "- 8 to Infinity") inside a team */
+  .combo-subgroup { border-top: 1px dashed var(--line); }
+  .combo-subgroup:first-child { border-top: none; }
+  .combo-subgroup-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 14px 9px 28px; font-size: 13px; font-weight: 650; color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .combo-subgroup-header:hover { background: var(--line); }
+  .combo-subgroup-header.expanded { background: var(--accent-soft-bg); color: var(--accent); }
+  .combo-subgroup-caret { font-size: 9px; color: var(--ink-faint); transition: transform 0.15s ease; }
+  .combo-subgroup-header.expanded .combo-subgroup-caret { transform: rotate(90deg); color: var(--accent); }
+
+  .combo-subgroup-clients { display: none; }
+  .combo-subgroup-clients.expanded { display: block; }
+  .combo-subgroup-clients .combo-client-item { padding-left: 42px; }
+
   .level-files-block {
     border: 1px solid var(--line); border-radius: 7px;
     padding: 10px 12px; margin-top: 10px; background: #fff;
@@ -885,6 +902,32 @@ function getClientTeamGroups() {
   return groups;
 }
 
+// Clients whose name ends with "- 8 to Infinity" (any spacing before the
+// dash/case) get pulled into their own nested sub-group inside their
+// team, instead of sitting flat in the team's client list. Works for any
+// team automatically - no team name is hardcoded.
+var SUFFIX_SUBGROUP_LABEL = "- 8 to Infinity";
+var SUFFIX_SUBGROUP_REGEX = /-\s*8\s*to\s*infinity\s*$/i;
+
+// Splits one team's client handles into: plain client entries, plus (if
+// any match) one subgroup entry holding the "- 8 to Infinity" clients -
+// then sorts everything (regular names + the subgroup label) together
+// A-Z so the subgroup sits in its correct alphabetical spot.
+function buildTeamEntries(handles) {
+  var regular = [], suffixed = [];
+  handles.forEach(function(h) {
+    if (SUFFIX_SUBGROUP_REGEX.test(h.trim())) suffixed.push(h); else regular.push(h);
+  });
+
+  var entries = regular.map(function(h) { return { type: "client", handle: h, label: h }; });
+  if (suffixed.length > 0) {
+    suffixed.sort(function(a, b) { return a.localeCompare(b); });
+    entries.push({ type: "subgroup", label: SUFFIX_SUBGROUP_LABEL, clients: suffixed });
+  }
+  entries.sort(function(a, b) { return a.label.localeCompare(b.label); });
+  return entries;
+}
+
 function buildClientComboMenuHtml() {
   var groups = getClientTeamGroups();
   var teamNames = Object.keys(groups).sort(function(a, b) { return a.localeCompare(b); });
@@ -892,16 +935,32 @@ function buildClientComboMenuHtml() {
     return '<div class="combo-empty">No clients available &mdash; contact admin</div>';
   }
   return teamNames.map(function(team) {
-    var handles = groups[team].slice().sort(function(a, b) { return a.localeCompare(b); });
-    var clientItemsHtml = handles.map(function(h) {
-      return '<div class="combo-client-item" data-client="' + escapeHtml(h) + '">' + escapeHtml(h) + '</div>';
+    var handles = groups[team].slice();
+    var entries = buildTeamEntries(handles);
+
+    var entriesHtml = entries.map(function(entry) {
+      if (entry.type === "client") {
+        return '<div class="combo-client-item" data-client="' + escapeHtml(entry.handle) + '">' + escapeHtml(entry.handle) + '</div>';
+      }
+      var subClientsHtml = entry.clients.map(function(h) {
+        return '<div class="combo-client-item" data-client="' + escapeHtml(h) + '">' + escapeHtml(h) + '</div>';
+      }).join("");
+      return (
+        '<div class="combo-subgroup">' +
+          '<div class="combo-subgroup-header">' +
+            '<span>' + escapeHtml(entry.label) + '</span><span class="combo-subgroup-caret">&#9656;</span>' +
+          '</div>' +
+          '<div class="combo-subgroup-clients">' + subClientsHtml + '</div>' +
+        '</div>'
+      );
     }).join("");
+
     return (
       '<div class="combo-team-group">' +
         '<div class="combo-team-header" data-team="' + escapeHtml(team) + '">' +
           '<span>' + escapeHtml(team) + '</span><span class="combo-team-caret">&#9656;</span>' +
         '</div>' +
-        '<div class="combo-team-clients">' + clientItemsHtml + '</div>' +
+        '<div class="combo-team-clients">' + entriesHtml + '</div>' +
       '</div>'
     );
   }).join("");
@@ -918,6 +977,7 @@ function onClientComboClick(evt) {
   var menu = wrap.querySelector(".client-combo-menu");
   var trigger = evt.target.closest(".client-combo-trigger");
   var teamHeader = evt.target.closest(".combo-team-header");
+  var subgroupHeader = evt.target.closest(".combo-subgroup-header");
   var clientItem = evt.target.closest(".combo-client-item");
 
   if (trigger) {
@@ -940,6 +1000,21 @@ function onClientComboClick(evt) {
     textEl.textContent = client;
     textEl.classList.remove("placeholder");
     menu.classList.remove("open");
+    evt.stopPropagation();
+    return;
+  }
+
+  if (subgroupHeader) {
+    var sgWrap = subgroupHeader.closest(".combo-subgroup");
+    var sgClients = sgWrap.querySelector(".combo-subgroup-clients");
+    var teamClientsPane = subgroupHeader.closest(".combo-team-clients");
+    var sgWasExpanded = sgClients.classList.contains("expanded");
+    teamClientsPane.querySelectorAll(".combo-subgroup-clients").forEach(function(p) { p.classList.remove("expanded"); });
+    teamClientsPane.querySelectorAll(".combo-subgroup-header").forEach(function(h) { h.classList.remove("expanded"); });
+    if (!sgWasExpanded) {
+      sgClients.classList.add("expanded");
+      subgroupHeader.classList.add("expanded");
+    }
     evt.stopPropagation();
     return;
   }
