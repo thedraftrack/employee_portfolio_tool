@@ -219,6 +219,53 @@
   }
   .add-client-btn:hover { background: var(--accent-soft-bg); }
 
+  /* ---------- Client Handle combo: Team list that expands in place to
+     show that Team's Clients (like a nested context menu) ---------- */
+  .client-combo { position: relative; }
+  .client-combo-trigger {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px;
+    border: 1px solid var(--line); border-radius: 7px;
+    background: #fff; color: var(--ink);
+    font-size: 14px; font-family: inherit; text-align: left; cursor: pointer;
+  }
+  .client-combo-trigger:hover { border-color: var(--accent); }
+  .client-combo-text.placeholder { color: var(--ink-faint); }
+  .client-combo-caret { color: var(--ink-faint); font-size: 11px; margin-left: 8px; flex-shrink: 0; }
+
+  .client-combo-menu {
+    display: none;
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    max-height: 280px; overflow-y: auto;
+    background: #fff;
+    border: 1px solid var(--line); border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+    z-index: 50;
+  }
+  .client-combo-menu.open { display: block; }
+
+  .combo-empty { padding: 16px; font-size: 13px; color: var(--ink-faint); text-align: center; }
+
+  .combo-team-group { border-bottom: 1px solid var(--line); }
+  .combo-team-group:last-child { border-bottom: none; }
+  .combo-team-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; font-size: 13.5px; font-weight: 650; color: var(--ink);
+    cursor: pointer;
+  }
+  .combo-team-header:hover { background: var(--paper); }
+  .combo-team-header.expanded { background: var(--accent-soft-bg); color: var(--accent); }
+  .combo-team-caret { font-size: 10px; color: var(--ink-faint); transition: transform 0.15s ease; }
+  .combo-team-header.expanded .combo-team-caret { transform: rotate(90deg); color: var(--accent); }
+
+  .combo-team-clients { display: none; background: var(--paper); }
+  .combo-team-clients.expanded { display: block; }
+  .combo-client-item {
+    padding: 9px 14px 9px 28px; font-size: 13.5px; color: var(--ink); cursor: pointer;
+  }
+  .combo-client-item:hover { background: var(--accent-soft-bg); color: var(--accent-dark); }
+
   .level-files-block {
     border: 1px solid var(--line); border-radius: 7px;
     padding: 10px 12px; margin-top: 10px; background: #fff;
@@ -814,7 +861,7 @@ function populateWillingToHelpTeamOptions() {
  * DYNAMIC CLIENT ROWS
  ****************************************************/
 var clientRowCount = 0;
-var MAX_CLIENTS = 50;
+var MAX_CLIENTS = 30;
 
 function resetClientRows() {
   document.getElementById("clientRows").innerHTML = "";
@@ -824,8 +871,10 @@ function resetClientRows() {
 }
 
 // Clients are grouped by Team under the hood (blank team => "Shared").
-// Instead of one big dropdown with every client, the employee first
-// picks a Team, then a second dropdown shows just that team's clients.
+// The Client Handle field is a single custom dropdown: it opens showing
+// just Team names, and clicking a Team expands its Clients nested right
+// underneath it (accordion-style) - so only one team's clients are ever
+// visible at once, instead of one long flat list.
 function getClientTeamGroups() {
   var groups = {};
   clientsList.forEach(function(c) {
@@ -836,50 +885,83 @@ function getClientTeamGroups() {
   return groups;
 }
 
-function buildClientTeamOptionsHtml(selectedTeam) {
+function buildClientComboMenuHtml() {
   var groups = getClientTeamGroups();
   var teamNames = Object.keys(groups).sort(function(a, b) { return a.localeCompare(b); });
-  if (teamNames.length === 0) return '<option value="">No teams available &mdash; contact admin</option>';
-  var html = '<option value="">Select team&hellip;</option>';
-  teamNames.forEach(function(t) {
-    var sel = (t === selectedTeam) ? " selected" : "";
-    html += '<option value="' + escapeHtml(t) + '"' + sel + '>' + escapeHtml(t) + '</option>';
-  });
-  return html;
+  if (teamNames.length === 0) {
+    return '<div class="combo-empty">No clients available &mdash; contact admin</div>';
+  }
+  return teamNames.map(function(team) {
+    var handles = groups[team].slice().sort(function(a, b) { return a.localeCompare(b); });
+    var clientItemsHtml = handles.map(function(h) {
+      return '<div class="combo-client-item" data-client="' + escapeHtml(h) + '">' + escapeHtml(h) + '</div>';
+    }).join("");
+    return (
+      '<div class="combo-team-group">' +
+        '<div class="combo-team-header" data-team="' + escapeHtml(team) + '">' +
+          '<span>' + escapeHtml(team) + '</span><span class="combo-team-caret">&#9656;</span>' +
+        '</div>' +
+        '<div class="combo-team-clients">' + clientItemsHtml + '</div>' +
+      '</div>'
+    );
+  }).join("");
 }
 
-function buildClientHandleOptionsHtml(team, selectedValue) {
-  if (!team) return '<option value="">Select team first&hellip;</option>';
-  var groups = getClientTeamGroups();
-  var handles = (groups[team] || []).slice().sort(function(a, b) { return a.localeCompare(b); });
-  if (handles.length === 0) return '<option value="">No clients found for that team</option>';
-  var html = '<option value="">Select client&hellip;</option>';
-  handles.forEach(function(h) {
-    var sel = (h === selectedValue) ? " selected" : "";
-    html += '<option value="' + escapeHtml(h) + '"' + sel + '>' + escapeHtml(h) + '</option>';
-  });
-  return html;
+function closeAllClientMenus() {
+  document.querySelectorAll(".client-combo-menu.open").forEach(function(m) { m.classList.remove("open"); });
 }
 
-function onClientTeamChange(select) {
-  var row = select.closest(".client-row");
-  var clientSelect = row.querySelector(".client-handle");
-  var team = select.value;
-  clientSelect.innerHTML = buildClientHandleOptionsHtml(team, "");
-  clientSelect.disabled = !team;
+// Single delegated click handler per row's combo widget - handles opening
+// the menu, expanding/collapsing a team (accordion), and picking a client.
+function onClientComboClick(evt) {
+  var wrap = evt.currentTarget;
+  var menu = wrap.querySelector(".client-combo-menu");
+  var trigger = evt.target.closest(".client-combo-trigger");
+  var teamHeader = evt.target.closest(".combo-team-header");
+  var clientItem = evt.target.closest(".combo-client-item");
+
+  if (trigger) {
+    var wasOpen = menu.classList.contains("open");
+    closeAllClientMenus();
+    if (!wasOpen) {
+      menu.innerHTML = buildClientComboMenuHtml();
+      menu.classList.add("open");
+    }
+    evt.stopPropagation();
+    return;
+  }
+
+  if (clientItem) {
+    var team = clientItem.closest(".combo-team-group").querySelector(".combo-team-header").getAttribute("data-team");
+    var client = clientItem.getAttribute("data-client");
+    wrap.querySelector(".client-handle-value").value = client;
+    wrap.querySelector(".client-team-value").value = team;
+    var textEl = wrap.querySelector(".client-combo-text");
+    textEl.textContent = client;
+    textEl.classList.remove("placeholder");
+    menu.classList.remove("open");
+    evt.stopPropagation();
+    return;
+  }
+
+  if (teamHeader) {
+    var group = teamHeader.closest(".combo-team-group");
+    var clientsPane = group.querySelector(".combo-team-clients");
+    var isExpanded = clientsPane.classList.contains("expanded");
+    menu.querySelectorAll(".combo-team-clients").forEach(function(p) { p.classList.remove("expanded"); });
+    menu.querySelectorAll(".combo-team-header").forEach(function(h) { h.classList.remove("expanded"); });
+    if (!isExpanded) {
+      clientsPane.classList.add("expanded");
+      teamHeader.classList.add("expanded");
+    }
+    evt.stopPropagation();
+  }
 }
 
-function refreshClientSelectOptions() {
-  document.querySelectorAll(".client-row").forEach(function(row) {
-    var teamSelect = row.querySelector(".client-team-select");
-    var clientSelect = row.querySelector(".client-handle");
-    var currentTeam = teamSelect.value;
-    var currentClient = clientSelect.value;
-    teamSelect.innerHTML = buildClientTeamOptionsHtml(currentTeam);
-    clientSelect.innerHTML = buildClientHandleOptionsHtml(currentTeam, currentClient);
-    clientSelect.disabled = !currentTeam;
-  });
-}
+// Nothing to refresh proactively - the menu is rebuilt from clientsList
+// fresh every time it's opened, so this just needs to exist for the
+// callers (fetchClients success + goToStep(2)) that still call it.
+function refreshClientSelectOptions() { /* no-op by design, see comment above */ }
 
 function addClientRow() {
   var container = document.getElementById("clientRows");
@@ -900,16 +982,23 @@ function addClientRow() {
       '<span class="client-row-label"></span>' +
       '<button type="button" class="remove-client-btn" onclick="removeClientRow(' + rowId + ')">Remove</button>' +
     '</div>' +
-    '<label>Team</label>' +
-    '<select class="client-team-select" onchange="onClientTeamChange(this)">' + buildClientTeamOptionsHtml("") + '</select>' +
     '<label>Client Handle</label>' +
-    '<select class="client-handle" disabled>' + buildClientHandleOptionsHtml("", "") + '</select>' +
+    '<div class="client-combo">' +
+      '<button type="button" class="client-combo-trigger">' +
+        '<span class="client-combo-text placeholder">Select client&hellip;</span>' +
+        '<span class="client-combo-caret">&#9662;</span>' +
+      '</button>' +
+      '<input type="hidden" class="client-handle-value" value="">' +
+      '<input type="hidden" class="client-team-value" value="">' +
+      '<div class="client-combo-menu"></div>' +
+    '</div>' +
     '<label>Level</label>' +
     '<select class="level-select" onchange="onLevelSelectChange(this)">' + levelOptionsHtml + '</select>' +
     '<div class="helper-text">Selecting QC also asks for Self Finalize Files/Day, since QC work goes through Self Finalize first.</div>' +
     '<div class="level-files-container"></div>';
 
   container.appendChild(div);
+  div.querySelector(".client-combo").addEventListener("click", onClientComboClick);
   refreshClientRowsUI();
 }
 
@@ -968,10 +1057,10 @@ function validateClientRows() {
 
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
-    var team = row.querySelector(".client-team-select").value.trim();
+    var team = row.querySelector(".client-team-value").value.trim();
     if (!team) return { valid: false, message: "Please select a Team for Client " + (i + 1) + "." };
 
-    var clientHandle = row.querySelector(".client-handle").value.trim();
+    var clientHandle = row.querySelector(".client-handle-value").value.trim();
     if (!clientHandle) return { valid: false, message: "Please select a Client Handle for Client " + (i + 1) + "." };
 
     var levelBlocks = row.querySelectorAll(".level-files-block");
@@ -1577,6 +1666,11 @@ function escapeHtml(str) {
  ****************************************************/
 document.addEventListener("DOMContentLoaded", function() {
   initEmployeeView();
+});
+
+// Clicking anywhere outside an open Client Handle combo closes it
+document.addEventListener("click", function(evt) {
+  if (!evt.target.closest(".client-combo")) closeAllClientMenus();
 });
 </script>
 </body>
